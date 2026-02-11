@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>DAM - Presupuestos Eléctricos</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            color: white;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1976D2;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #1976D2;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background: #1976D2;
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: #1565C0;
+            transform: scale(0.98);
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-success:active {
+            background: #45a049;
+            transform: scale(0.98);
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+
+        .item-list {
+            margin-top: 16px;
+        }
+
+        .item {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-description {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .item-detail {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: #1976D2;
+            font-size: 16px;
+            margin-right: 12px;
+        }
+
+        .totals {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
+        }
+
+        .total-row.final {
+            border-top: 2px solid #ddd;
+            margin-top: 8px;
+            padding-top: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1976D2;
+        }
+
+        .discount-row {
+            color: #f44336;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            background: white;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #1976D2;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .presupuesto-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .presupuesto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .presupuesto-numero {
+            font-weight: 700;
+            color: #1976D2;
+            font-size: 16px;
+        }
+
+        .presupuesto-total {
+            font-weight: 700;
+            font-size: 18px;
+            color: #4CAF50;
+        }
+
+        .presupuesto-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .presupuesto-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .load-prices-btn {
+            background: #FF9800;
+            margin-bottom: 16px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-row > * {
+            flex: 1;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printArea, #printArea * {
+                visibility: visible;
+            }
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DAM</h1>
+        <p>Presupuestos de Instalaciones Eléctricas</p>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('nuevo')">Nuevo Presupuesto</button>
+            <button class="tab" onclick="switchTab('guardados')">Guardados</button>
+            <button class="tab" onclick="switchTab('precios')">Precios</button>
+        </div>
+
+        <!-- Tab: Nuevo Presupuesto -->
+        <div id="tab-nuevo" class="tab-content active">
+            <div class="card">
+                <div class="card-title">Datos del Cliente</div>
+                <div class="input-group">
+                    <label>Nombre del Cliente *</label>
+                    <input type="text" id="clienteNombre" placeholder="Juan Pérez">
+                </div>
+                <div class="input-group">
+                    <label>Dirección</label>
+                    <input type="text" id="clienteDireccion" placeholder="Av. Corrientes 1234">
+                </div>
+                <div class="input-group">
+                    <label>Teléfono</label>
+                    <input type="tel" id="clienteTelefono" placeholder="11-1234-5678">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Agregar Ítems</div>
+                <div class="input-group">
+                    <label>Categoría</label>
+                    <select id="categoria" onchange="cargarItems()">
+                        <option value="">Seleccione una categoría</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Ítem</label>
+                    <select id="item">
+                        <option value="">Seleccione un ítem</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Cantidad</label>
+                    <input type="number" id="cantidad" value="1" min="0.01" step="0.01">
+                </div>
+                <button class="btn btn-primary" onclick="agregarItem()">Agregar Ítem</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Ítems del Presupuesto</div>
+                <div id="itemsList" class="item-list">
+                    <p style="text-align: center; color: #999;">No hay ítems agregados</p>
+                </div>
+                <div class="totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="input-group" style="margin: 12px 0;">
+                        <label>Descuento (%)</label>
+                        <input type="number" id="descuento" value="0" min="0" max="100" step="0.1" onchange="calcularTotales()">
+                    </div>
+                    <div class="total-row discount-row">
+                        <span>Descuento:</span>
+                        <span id="montoDescuento">- $0.00</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>TOTAL:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Observaciones</div>
+                <div class="input-group">
+                    <textarea id="observaciones" placeholder="Observaciones adicionales..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="guardarPresupuesto()">Guardar Presupuesto</button>
+        </div>
+
+        <!-- Tab: Presupuestos Guardados -->
+        <div id="tab-guardados" class="tab-content">
+            <div id="presupuestosList"></div>
+        </div>
+
+        <!-- Tab: Precios -->
+        <div id="tab-precios" class="tab-content">
+            <div class="card">
+                <div class="card-title">Gestión de Precios</div>
+                <p style="margin-bottom: 16px; color: #666;">
+                    Carga o actualiza la lista de precios manualmente.
+                </p>
+                
+                <div class="input-group">
+                    <label>Categoría</label>
+                    <input type="text" id="nuevaCategoria" placeholder="Ej: Canalización en Losa">
+                </div>
+                <div class="input-group">
+                    <label>Descripción</label>
+                    <input type="text" id="nuevaDescripcion" placeholder="Ej: Cañería metálica">
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Precio ($)</label>
+                        <input type="number" id="nuevoPrecio" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>Unidad</label>
+                        <input type="text" id="nuevaUnidad" placeholder="boca, ud, m">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="agregarPrecio()">Agregar Precio</button>
+                
+                <div style="margin-top: 24px;">
+                    <h3 style="margin-bottom: 12px;">Precios Cargados</h3>
+                    <div id="preciosList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="printArea" style="display: none;"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Base de datos en LocalStorage
+        const DB = {
+            precios: JSON.parse(localStorage.getItem('precios') || '[]'),
+            presupuestos: JSON.parse(localStorage.getItem('presupuestos') || '[]'),
+            
+            savePrecios() {
+                localStorage.setItem('precios', JSON.stringify(this.precios));
+            },
+            
+            savePresupuestos() {
+                localStorage.setItem('presupuestos', JSON.stringify(this.presupuestos));
+            }
+        };
+
+        // Variables globales
+        let itemsPresupuesto = [];
+        let preciosPorCategoria = {};
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarPreciosIniciales();
+            actualizarCategorias();
+            mostrarPresupuestos();
+            mostrarPrecios();
+        });
+
+        function cargarPreciosIniciales() {
+            if (DB.precios.length === 0) {
+                // Precios de ejemplo
+                const preciosEjemplo = [
+                    {categoria: 'Servicios Básicos', descripcion: 'Visita: Inspección y Presupuesto', precio: 45324, unidad: 'visita'},
+                    {categoria: 'Servicios Básicos', descripcion: 'Boca Completa', precio: 90490, unidad: 'boca'},
+                    {categoria: 'Servicios Básicos', descripcion: 'Hora de Trabajo', precio: 45324, unidad: 'hora'},
+                    {categoria: 'Canalización en Losa', descripcion: 'En losa con caño metálico', precio: 45811, unidad: 'boca'},
+                    {categoria: 'Canalización en Losa', descripcion: 'En loseta con caño metálico', precio: 48101, unidad: 'boca'},
+                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo común', precio: 52061, unidad: 'boca'},
+                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo hueco', precio: 50824, unidad: 'boca'},
+                    {categoria: 'Tableros Monofásicos', descripcion: 'Tablero Principal con 1 ID y 1 TM + PAT', precio: 267314, unidad: 'ud'},
+                    {categoria: 'Tableros Monofásicos', descripcion: 'Solo PAT', precio: 135684, unidad: 'ud'},
+                    {categoria: 'Tableros Trifásicos', descripcion: 'Tablero Principal con 1 ID y 1 TM + PAT', precio: 361993, unidad: 'ud'},
+                    {categoria: 'Cableado', descripcion: 'Cableado en obra nueva - Opción 1', precio: 22265, unidad: 'boca'},
+                    {categoria: 'Cableado', descripcion: 'Cableado en obra nueva - Opción 2', precio: 31002, unidad: 'boca'},
+                    {categoria: 'Puntos y Tomas', descripcion: 'Punto, toma simple, portalámpara', precio: 16160, unidad: 'boca'},
+                    {categoria: 'Puntos y Tomas', descripcion: 'Toma doble', precio: 20467, unidad: 'boca'},
+                    {categoria: 'Artefactos de Iluminación', descripcion: 'Artefacto aplique simple', precio: 24798, unidad: 'ud'},
+                    {categoria: 'Artefactos de Iluminación', descripcion: 'Spot Led por unidad', precio: 24798, unidad: 'ud'},
+                    {categoria: 'Artefactos de Iluminación', descripcion: 'Ventilador de techo', precio: 90490, unidad: 'ud'},
+                ];
+                
+                DB.precios = preciosEjemplo;
+                DB.savePrecios();
+            }
+        }
+
+        function actualizarCategorias() {
+            preciosPorCategoria = {};
+            DB.precios.forEach(p => {
+                if (!preciosPorCategoria[p.categoria]) {
+                    preciosPorCategoria[p.categoria] = [];
+                }
+                preciosPorCategoria[p.categoria].push(p);
+            });
+            
+            const select = document.getElementById('categoria');
+            select.innerHTML = '<option value="">Seleccione una categoría</option>';
+            Object.keys(preciosPorCategoria).sort().forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+        }
+
+        function cargarItems() {
+            const categoria = document.getElementById('categoria').value;
+            const selectItem = document.getElementById('item');
+            selectItem.innerHTML = '<option value="">Seleccione un ítem</option>';
+            
+            if (categoria && preciosPorCategoria[categoria]) {
+                preciosPorCategoria[categoria].forEach((item, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${item.descripcion} - $${formatNumber(item.precio)} / ${item.unidad}`;
+                    selectItem.appendChild(option);
+                });
+            }
+        }
+
+        function agregarItem() {
+            const categoria = document.getElementById('categoria').value;
+            const itemIndex = document.getElementById('item').value;
+            const cantidad = parseFloat(document.getElementById('cantidad').value);
+            
+            if (!categoria || itemIndex === '' || !cantidad) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+            
+            const item = preciosPorCategoria[categoria][itemIndex];
+            const subtotal = item.precio * cantidad;
+            
+            itemsPresupuesto.push({
+                descripcion: item.descripcion,
+                cantidad: cantidad,
+                precioUnitario: item.precio,
+                unidad: item.unidad,
+                subtotal: subtotal
+            });
+            
+            mostrarItems();
+            calcularTotales();
+            
+            // Resetear
+            document.getElementById('cantidad').value = 1;
+            document.getElementById('item').value = '';
+        }
+
+        function eliminarItem(index) {
+            if (confirm('¿Eliminar este ítem?')) {
+                itemsPresupuesto.splice(index, 1);
+                mostrarItems();
+                calcularTotales();
+            }
+        }
+
+        function mostrarItems() {
+            const lista = document.getElementById('itemsList');
+            if (itemsPresupuesto.length === 0) {
+                lista.innerHTML = '<p style="text-align: center; color: #999;">No hay ítems agregados</p>';
+                return;
+            }
+            
+            lista.innerHTML = itemsPresupuesto.map((item, index) => `
+                <div class="item">
+                    <div class="item-info">
+                        <div class="item-description">${item.descripcion}</div>
+                        <div class="item-detail">${item.cantidad} ${item.unidad} × $${formatNumber(item.precioUnitario)}</div>
+                    </div>
+                    <div class="item-price">$${formatNumber(item.subtotal)}</div>
+                    <button class="btn btn-danger" onclick="eliminarItem(${index})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function calcularTotales() {
+            const subtotal = itemsPresupuesto.reduce((sum, item) => sum + item.subtotal, 0);
+            const descuentoPorcentaje = parseFloat(document.getElementById('descuento').value) || 0;
+            const montoDescuento = subtotal * (descuentoPorcentaje / 100);
+            const total = subtotal - montoDescuento;
+            
+            document.getElementById('subtotal').textContent = '$' + formatNumber(subtotal);
+            document.getElementById('montoDescuento').textContent = '- $' + formatNumber(montoDescuento);
+            document.getElementById('total').textContent = '$' + formatNumber(total);
+        }
+
+        function guardarPresupuesto() {
+            const clienteNombre = document.getElementById('clienteNombre').value.trim();
+            const clienteDireccion = document.getElementById('clienteDireccion').value.trim();
+            const clienteTelefono = document.getElementById('clienteTelefono').value.trim();
+            const observaciones = document.getElementById('observaciones').value.trim();
+            
+            if (!clienteNombre) {
+                alert('Por favor ingrese el nombre del cliente');
+                return;
+            }
+            
+            if (itemsPresupuesto.length === 0) {
+                alert('Por favor agregue al menos un ítem');
+                return;
+            }
+            
+            const año = new Date().getFullYear();
+            const numero = DB.presupuestos.filter(p => p.numero.startsWith(año + '-')).length + 1;
+            const numeroPresupuesto = `${año}-${String(numero).padStart(4, '0')}`;
+            
+            const subtotal = itemsPresupuesto.reduce((sum, item) => sum + item.subtotal, 0);
+            const descuentoPorcentaje = parseFloat(document.getElementById('descuento').value) || 0;
+            const montoDescuento = subtotal * (descuentoPorcentaje / 100);
+            const total = subtotal - montoDescuento;
+            
+            const presupuesto = {
+                id: Date.now(),
+                numero: numeroPresupuesto,
+                fecha: new Date().toISOString(),
+                cliente: {
+                    nombre: clienteNombre,
+                    direccion: clienteDireccion,
+                    telefono: clienteTelefono
+                },
+                items: itemsPresupuesto,
+                subtotal: subtotal,
+                descuentoPorcentaje: descuentoPorcentaje,
+                montoDescuento: montoDescuento,
+                total: total,
+                observaciones: observaciones
+            };
+            
+            DB.presupuestos.push(presupuesto);
+            DB.savePresupuestos();
+            
+            alert(`Presupuesto ${numeroPresupuesto} guardado correctamente`);
+            
+            // Limpiar formulario
+            document.getElementById('clienteNombre').value = '';
+            document.getElementById('clienteDireccion').value = '';
+            document.getElementById('clienteTelefono').value = '';
+            document.getElementById('observaciones').value = '';
+            document.getElementById('descuento').value = 0;
+            itemsPresupuesto = [];
+            mostrarItems();
+            calcularTotales();
+            
+            // Cambiar a tab guardados
+            switchTab('guardados');
+        }
+
+        function mostrarPresupuestos() {
+            const lista = document.getElementById('presupuestosList');
+            if (DB.presupuestos.length === 0) {
+                lista.innerHTML = '<div class="card"><p style="text-align: center; color: #999;">No hay presupuestos guardados</p></div>';
+                return;
+            }
+            
+            lista.innerHTML = DB.presupuestos.slice().reverse().map(p => `
+                <div class="presupuesto-item">
+                    <div class="presupuesto-header">
+                        <div class="presupuesto-numero">N° ${p.numero}</div>
+                        <div class="presupuesto-total">$${formatNumber(p.total)}</div>
+                    </div>
+                    <div class="presupuesto-info"><strong>Cliente:</strong> ${p.cliente.nombre}</div>
+                    <div class="presupuesto-info"><strong>Fecha:</strong> ${formatDate(p.fecha)}</div>
+                    ${p.cliente.direccion ? `<div class="presupuesto-info"><strong>Dirección:</strong> ${p.cliente.direccion}</div>` : ''}
+                    <div class="presupuesto-actions">
+                        <button class="btn btn-primary" onclick="generarPDF(${p.id})">Generar PDF</button>
+                        <button class="btn btn-danger" onclick="eliminarPresupuesto(${p.id})">Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function eliminarPresupuesto(id) {
+            if (confirm('¿Eliminar este presupuesto?')) {
+                DB.presupuestos = DB.presupuestos.filter(p => p.id !== id);
+                DB.savePresupuestos();
+                mostrarPresupuestos();
+            }
+        }
+
+        function generarPDF(id) {
+            const presupuesto = DB.presupuestos.find(p => p.id === id);
+            if (!presupuesto) return;
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            let y = 20;
+            
+            // Encabezado
+            doc.setFontSize(24);
+            doc.setTextColor(25, 118, 210);
+            doc.text('DAM', 20, y);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(100);
+            y += 7;
+            doc.text('Instalaciones Eléctricas', 20, y);
+            
+            // Número de presupuesto
+            doc.setFontSize(14);
+            doc.setTextColor(0);
+            y += 15;
+            doc.text(`PRESUPUESTO N° ${presupuesto.numero}`, 20, y);
+            
+            doc.setFontSize(10);
+            y += 7;
+            doc.text(`Fecha: ${formatDate(presupuesto.fecha)}`, 20, y);
+            
+            // Línea separadora
+            y += 5;
+            doc.line(20, y, 190, y);
+            
+            // Datos del cliente
+            y += 10;
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('CLIENTE:', 20, y);
+            
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            y += 7;
+            doc.text(`Nombre: ${presupuesto.cliente.nombre}`, 20, y);
+            if (presupuesto.cliente.direccion) {
+                y += 6;
+                doc.text(`Dirección: ${presupuesto.cliente.direccion}`, 20, y);
+            }
+            if (presupuesto.cliente.telefono) {
+                y += 6;
+                doc.text(`Teléfono: ${presupuesto.cliente.telefono}`, 20, y);
+            }
+            
+            // Línea separadora
+            y += 7;
+            doc.line(20, y, 190, y);
+            
+            // Encabezados de tabla
+            y += 10;
+            doc.setFont(undefined, 'bold');
+            doc.text('Descripción', 20, y);
+            doc.text('Cant.', 120, y);
+            doc.text('P. Unit.', 145, y);
+            doc.text('Subtotal', 175, y);
+            
+            y += 2;
+            doc.line(20, y, 190, y);
+            
+            // Items
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(9);
+            y += 7;
+            
+            presupuesto.items.forEach(item => {
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                const descripcion = item.descripcion.length > 45 
+                    ? item.descripcion.substring(0, 42) + '...' 
+                    : item.descripcion;
+                
+                doc.text(descripcion, 20, y);
+                doc.text(`${item.cantidad} ${item.unidad}`, 120, y);
+                doc.text(`$${formatNumber(item.precioUnitario)}`, 145, y);
+                doc.text(`$${formatNumber(item.subtotal)}`, 175, y);
+                
+                y += 6;
+            });
+            
+            // Totales
+            y += 5;
+            doc.line(20, y, 190, y);
+            y += 7;
+            
+            doc.setFontSize(10);
+            doc.text('SUBTOTAL:', 145, y);
+            doc.text(`$${formatNumber(presupuesto.subtotal)}`, 175, y);
+            
+            if (presupuesto.descuentoPorcentaje > 0) {
+                y += 7;
+                doc.setTextColor(211, 47, 47);
+                doc.text(`Descuento (${presupuesto.descuentoPorcentaje}%):`, 145, y);
+                doc.text(`- $${formatNumber(presupuesto.montoDescuento)}`, 175, y);
+                doc.setTextColor(0);
+                
+                y += 3;
+                doc.line(145, y, 190, y);
+            }
+            
+            y += 7;
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(12);
+            doc.text('TOTAL:', 145, y);
+            doc.text(`$${formatNumber(presupuesto.total)}`, 175, y);
+            
+            // Observaciones
+            if (presupuesto.observaciones) {
+                y += 15;
+                doc.setFontSize(11);
+                doc.text('OBSERVACIONES:', 20, y);
+                
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                y += 7;
+                const obs = doc.splitTextToSize(presupuesto.observaciones, 170);
+                doc.text(obs, 20, y);
+            }
+            
+            // Guardar PDF
+            doc.save(`Presupuesto_${presupuesto.numero}.pdf`);
+        }
+
+        function agregarPrecio() {
+            const categoria = document.getElementById('nuevaCategoria').value.trim();
+            const descripcion = document.getElementById('nuevaDescripcion').value.trim();
+            const precio = parseFloat(document.getElementById('nuevoPrecio').value);
+            const unidad = document.getElementById('nuevaUnidad').value.trim();
+            
+            if (!categoria || !descripcion || !precio || !unidad) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+            
+            DB.precios.push({
+                categoria: categoria,
+                descripcion: descripcion,
+                precio: precio,
+                unidad: unidad
+            });
+            
+            DB.savePrecios();
+            actualizarCategorias();
+            mostrarPrecios();
+            
+            // Limpiar
+            document.getElementById('nuevaCategoria').value = '';
+            document.getElementById('nuevaDescripcion').value = '';
+            document.getElementById('nuevoPrecio').value = '';
+            document.getElementById('nuevaUnidad').value = '';
+            
+            alert('Precio agregado correctamente');
+        }
+
+        function mostrarPrecios() {
+            const lista = document.getElementById('preciosList');
+            if (DB.precios.length === 0) {
+                lista.innerHTML = '<p style="text-align: center; color: #999;">No hay precios cargados</p>';
+                return;
+            }
+            
+            const porCategoria = {};
+            DB.precios.forEach((p, index) => {
+                if (!porCategoria[p.categoria]) {
+                    porCategoria[p.categoria] = [];
+                }
+                porCategoria[p.categoria].push({...p, index});
+            });
+            
+            lista.innerHTML = Object.keys(porCategoria).sort().map(cat => `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #1976D2; margin-bottom: 8px;">${cat}</h4>
+                    ${porCategoria[cat].map(p => `
+                        <div class="item">
+                            <div class="item-info">
+                                <div class="item-description">${p.descripcion}</div>
+                                <div class="item-detail">$${formatNumber(p.precio)} / ${p.unidad}</div>
+                            </div>
+                            <button class="btn btn-danger" onclick="eliminarPrecio(${p.index})">✕</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function eliminarPrecio(index) {
+            if (confirm('¿Eliminar este precio?')) {
+                DB.precios.splice(index, 1);
+                DB.savePrecios();
+                actualizarCategorias();
+                mostrarPrecios();
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            if (tab === 'guardados') {
+                mostrarPresupuestos();
+            } else if (tab === 'precios') {
+                mostrarPrecios();
+            }
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('es-AR');
+        }
+
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
