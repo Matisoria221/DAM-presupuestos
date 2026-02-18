@@ -604,6 +604,7 @@
             actualizarCategorias();
             mostrarPrecios();
         }
+        
         function aumentarCategoria(categoria, porcentaje){
 
             porcentaje = parseFloat(porcentaje);
@@ -692,6 +693,7 @@
             const subtotal = item.precio * cantidad;
             
             itemsPresupuesto.push({
+                categoria: categoria, 
                 descripcion: item.descripcion,
                 cantidad: cantidad,
                 precioUnitario: item.precio,
@@ -931,19 +933,37 @@
 
             doc.setFont("helvetica", "normal");
 
+           let categoriaActual = "";
+
             presupuesto.items.forEach(item => {
 
-                if (y > 270) {
+                // Si cambia la categoría, mostrar título
+                if(item.categoria !== categoriaActual){
+
+                    categoriaActual = item.categoria;
+
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(11);
+                    doc.text(categoriaActual, 20, y);
+
+                    y += 6;
+                }
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+
+                doc.text(item.descripcion, 25, y);
+                doc.text(item.cantidad.toString(), 120, y);
+                doc.text("$" + formatNumber(item.precioUnitario), 145, y);
+                doc.text("$" + formatNumber(item.subtotal), 175, y);
+
+                y += 6;
+
+                if (y > 260) {
                     doc.addPage();
                     y = 20;
                 }
 
-                doc.text(item.descripcion, 20, y);
-                doc.text(item.cantidad.toString(), 110, y, { align: "right" });
-                doc.text(`$${formatNumber(item.precioUnitario)}`, 140, y, { align: "right" });
-                doc.text(`$${formatNumber(item.subtotal)}`, 190, y, { align: "right" });
-
-                y += 8;
             });
 
             y += 5;
