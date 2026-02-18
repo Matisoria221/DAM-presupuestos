@@ -438,11 +438,32 @@
                     <h3 style="margin-bottom: 12px;">Precios Cargados</h3>
                     <div id="preciosList"></div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <div style="margin-bottom:16px;">
 
-    <div id="printArea" style="display: none;"></div>
+                <input type="number"
+                    id="inputPorcentaje"
+                    placeholder="Porcentaje (ej: 12.5)"
+                    step="0.01"
+                    style="padding:6px;width:150px;">
+
+                <button onclick="aumentarPreciosPorcentaje()"
+                        style="
+                        padding:6px 12px;
+                        background:#2e7d32;
+                        color:white;
+                        border:none;
+                        border-radius:4px;
+                        cursor:pointer;">
+                    Aumentar todos
+                </button>
+
+            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="printArea" style="display: none;"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -471,33 +492,156 @@
             mostrarPresupuestos();
             mostrarPrecios();
         });
-
         function cargarPreciosIniciales() {
-            if (DB.precios.length === 0) {
-                // Precios de ejemplo
-                const preciosEjemplo = [
+
+            const preciosEjemplo = [
                     {categoria: 'Servicios Básicos', descripcion: 'Visita: Inspección y Presupuesto', precio: 45324, unidad: 'visita'},
                     {categoria: 'Servicios Básicos', descripcion: 'Boca Completa', precio: 90490, unidad: 'boca'},
                     {categoria: 'Servicios Básicos', descripcion: 'Hora de Trabajo', precio: 45324, unidad: 'hora'},
                     {categoria: 'Canalización en Losa', descripcion: 'En losa con caño metálico', precio: 45811, unidad: 'boca'},
                     {categoria: 'Canalización en Losa', descripcion: 'En loseta con caño metálico', precio: 48101, unidad: 'boca'},
-                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo común', precio: 52061, unidad: 'boca'},
-                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo hueco', precio: 50824, unidad: 'boca'},
+                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo común x boca', precio: 52061, unidad: 'boca'},
+                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo hueco x boca', precio: 50824, unidad: 'boca'},
+                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo común x metro', precio: 12442, unidad: 'boca'},
+                    {categoria: 'Amurado en Mampostería', descripcion: 'Ladrillo hueco x metro', precio: 12199, unidad: 'boca'},
+                    {categoria: 'Amurado de cañería a la vista', descripcion: 'Metal, PVC, Cablecanar (14x30)', precio: 41611, unidad: 'boca'},
+                    {categoria: 'Pase de viga y/o columna', descripcion: 'A razón de una boca en viga y/o columna', precio: 48318, unidad: 'boca'},
+                    {categoria: 'Cable subterráneo', descripcion: 'tierra', precio: 45282, unidad: 'metro'},
+                    {categoria: 'Cable subterráneo', descripcion: 'piso', precio: 48318, unidad: 'metro'},
+                    {categoria: 'Cable subterráneo', descripcion: 'adicional por caja de paso tierra', precio: 49728, unidad: 'ud'},
+                    {categoria: 'Cable subterráneo', descripcion: 'adicional por caja de paso piso', precio: 53101, unidad: 'ud'},
                     {categoria: 'Tableros Monofásicos', descripcion: 'Tablero Principal con 1 ID y 1 TM + PAT', precio: 267314, unidad: 'ud'},
                     {categoria: 'Tableros Monofásicos', descripcion: 'Solo PAT', precio: 135684, unidad: 'ud'},
-                    {categoria: 'Tableros Trifásicos', descripcion: 'Tablero Principal con 1 ID y 1 TM + PAT', precio: 361993, unidad: 'ud'},
-                    {categoria: 'Cableado', descripcion: 'Cableado en obra nueva - Opción 1', precio: 22265, unidad: 'boca'},
-                    {categoria: 'Cableado', descripcion: 'Cableado en obra nueva - Opción 2', precio: 31002, unidad: 'boca'},
+                    {categoria: 'Tableros seccionales', descripcion: 'Hasta 8 polos', precio: 189986, unidad: 'ud'},
+                    {categoria: 'Tableros seccionales', descripcion: '8 a 36 polos', precio: 760039, unidad: 'ud'},
+                    {categoria: 'Tableros seccionales', descripcion: '36 a 54 polos', precio: 1140006, unidad: 'ud'},
+                    {categoria: 'Artefactos de iluminación y otros', descripcion: 'Artefacto aplique simple', precio: 24798, unidad: 'ud'},
+                    {categoria: 'Artefactos de iluminación y otros', descripcion: 'Artefacto colgante liviano 3 luces 1 efecto', precio: 49598, unidad: 'ud'},
+                    {categoria: 'Artefactos de iluminación y otros', descripcion: 'Artefacto colgante liviano 6 luces 1 efecto', precio: 65704, unidad: 'ud'},
+                    {categoria: 'Artefactos de iluminación y otros', descripcion: 'Artefacto colgante pesado - Minimo', precio: 86774, unidad: 'ud'},
+                    {categoria: 'Artefactos de iluminación y otros', descripcion: 'Equipo tubo LED simple 7 a 36 W', precio: 49598, unidad: 'ud'},
+                    {categoria: 'Artefactos de iluminación y otros', descripcion: 'Equipo tubo LED doble 7 a 36 W', precio: 61055, unidad: 'ud'},
+                    {categoria: 'Artefactos de Iluminación', descripcion: 'Ventilador de techo', precio: 90490, unidad: 'ud'},
+                    {categoria: 'Artefactos de iluminación y otros', descripcion: 'Ventilador de techo con luminaria', precio: 113148, unidad: 'ud'},                   
+                    {categoria: 'Cableado', descripcion: 'Cableado en obra nueva canalizada por el profesional', precio: 22265, unidad: 'boca'},
+                    {categoria: 'Cableado', descripcion: 'Cableado en obra nueva canalizada por otro profesional', precio: 31002, unidad: 'boca'},
+                    {categoria: 'Re cableado', descripcion: 'con artefacto', precio: 46490, unidad: 'ud'},
+                    {categoria: 'Re cableado', descripcion: 'sin artefacto', precio: 31002, unidad: 'ud'},
                     {categoria: 'Puntos y Tomas', descripcion: 'Punto, toma simple, portalámpara', precio: 16160, unidad: 'boca'},
                     {categoria: 'Puntos y Tomas', descripcion: 'Toma doble', precio: 20467, unidad: 'boca'},
-                    {categoria: 'Artefactos de Iluminación', descripcion: 'Artefacto aplique simple', precio: 24798, unidad: 'ud'},
-                    {categoria: 'Artefactos de Iluminación', descripcion: 'Spot Led por unidad', precio: 24798, unidad: 'ud'},
-                    {categoria: 'Artefactos de Iluminación', descripcion: 'Ventilador de techo', precio: 90490, unidad: 'ud'},
+                    {categoria: 'Puntos y Tomas', descripcion: 'Punto Combinado', precio: 17393, unidad: 'boca'},
+                    {categoria: 'Acometida', descripcion: 'Gabinete 1 medidor Monofasico', precio: 189986, unidad: 'ud'},
+                    {categoria: 'Acometida', descripcion: 'Gabinete 2 medidores Monofasicos', precio: 271512, unidad: 'ud'},
+                    {categoria: 'Acometida', descripcion: 'PAT de Servicio (jabalina + caja insp.)', precio: 135684, unidad: 'ud'},
+                    {categoria: 'Acometida', descripcion: 'Pilar completo (Gabinete, TP, Caño y PAT)', precio: 746466, unidad: 'ud'},
+                    {categoria: 'Acometida', descripcion: 'Agregado de un gabinete de medidor + TP', precio: 271512, unidad: 'ud'},
+                    {categoria: 'Emergencia/Urgencia', descripcion: 'Lun. a vie. 8 a 20 hs. Atención inmediata(Hasta 5hs)', precio: 84200, unidad: 'ud'},
+                    {categoria: 'Emergencia/Urgencia', descripcion: 'Lun. a vie. 8 a 20 hs. adicional por hora', precio: 22500, unidad: 'ud'},
+                    {categoria: 'Emergencia/Urgencia', descripcion: 'Sábados Domingos y Feriados (Hasta 5hs)', precio: 129800, unidad: 'ud'},
+                    {categoria: 'Emergencia/Urgencia', descripcion: 'Sábados Domingos y Feriados adicional por hora', precio: 22900, unidad: 'ud'},
+                    {categoria: 'Ayudante', descripcion: 'Mano de obra por 8 hs', precio: 57151, unidad: 'ud'},                    
+                        
                 ];
-                
-                DB.precios = preciosEjemplo;
-                DB.savePrecios();
+            // Fusionar precios existentes con los nuevos sin duplicar
+            preciosEjemplo.forEach(nuevo => {
+
+            const existe = DB.precios.some(p =>
+                p.categoria === nuevo.categoria &&
+                p.descripcion === nuevo.descripcion
+            );
+
+            if (!existe) {
+                DB.precios.push(nuevo);
             }
+
+            });
+
+        DB.savePrecios();
+        }
+
+        function aumentarPreciosPorcentaje() {
+
+            const porcentaje = parseFloat(
+                document.getElementById("inputPorcentaje").value
+            );
+
+            if (isNaN(porcentaje)) {
+                alert("Ingrese un porcentaje válido");
+                return;
+            }
+
+            const factor = 1 + (porcentaje / 100);
+
+            DB.precios.forEach(p => {
+
+                p.precio = parseFloat(
+                    (p.precio * factor).toFixed(2)
+                );
+
+            });
+
+            DB.savePrecios();
+
+            actualizarCategorias();
+            mostrarPrecios();
+
+            alert("Precios actualizados correctamente");
+        }
+
+        function modificarPrecio(index, nuevoPrecio) {
+
+            nuevoPrecio = parseFloat(nuevoPrecio);
+
+            if (isNaN(nuevoPrecio)) {
+                alert("Precio inválido");
+                return;
+            }
+
+            DB.precios[index].precio = nuevoPrecio;
+
+            DB.savePrecios();
+
+            actualizarCategorias();
+            mostrarPrecios();
+        }
+        function aumentarCategoria(categoria, porcentaje){
+
+            porcentaje = parseFloat(porcentaje);
+
+            if (isNaN(porcentaje)) return;
+
+            const factor = 1 + porcentaje / 100;
+
+            DB.precios.forEach(p => {
+
+                if(p.categoria === categoria){
+                    p.precio = parseFloat((p.precio * factor).toFixed(2));
+                }
+
+            });
+
+            DB.savePrecios();
+            actualizarCategorias();
+            mostrarPrecios();
+        }
+
+        function ajustarPrecios({ porcentaje = null, categoria = null, fijo = null }) {
+
+            DB.precios.forEach(p => {
+
+                if (categoria && p.categoria !== categoria) return;
+
+                if (porcentaje !== null)
+                    p.precio = parseFloat((p.precio * (1 + porcentaje/100)).toFixed(2));
+
+                if (fijo !== null)
+                    p.precio = parseFloat(fijo);
+
+            });
+
+            DB.savePrecios();
+            actualizarCategorias();
+            mostrarPrecios();
         }
 
         function actualizarCategorias() {
@@ -696,98 +840,123 @@
 
         function generarPDF(id) {
             const presupuesto = DB.presupuestos.find(p => p.id === id);
-            if (!presupuesto) return;
-            
+
+            if (!presupuesto) {
+                alert("No se encontró el presupuesto");
+                return;
+            }
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
+
             let y = 20;
-            
-            // Encabezado
-            doc.setFontSize(24);
-            doc.setTextColor(25, 118, 210);
-            doc.text('DAM', 20, y);
-            
-            doc.setFontSize(12);
-            doc.setTextColor(100);
-            y += 7;
-            doc.text('Instalaciones Eléctricas', 20, y);
-            
-            // Número de presupuesto
-            doc.setFontSize(14);
-            doc.setTextColor(0);
-            y += 15;
-            doc.text(`PRESUPUESTO N° ${presupuesto.numero}`, 20, y);
-            
+
+            // ==========================
+            // LOGO EN BASE64
+            // ==========================
+
+            const logoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARgAAAEwCAYAAABscW7XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAALiMAAC4jAXilP3YAADx/SURBVHhe7d15XBT1Gwfwz+6CgsihICqJKKJ4oSCKmEeeqeGV5i2WqT+vzCM1TSs77bAyK808Usn71qw0RcUjxVtQBBQPFJUblJtdfn8szOwMsBc7MDv7vF+vfcU8Mwgp+/C9nu9X9lH0yCIQQogA5PwAIYSYCiUYQohgKMEQQgRDCYYQIhhKMIQQwchoFqliZJDDGtX5YWKmlCiEEgX8MDESJZgK6mQ1FM3kgfwwMVNZRenYV/ANlCjk3yJGoC5SBTjKXNFUHsAPEzNmJ3OCj6IHP0yMRAmmAjoqBkNGf4WS01rRA3YyJ36YGIHeHUZqLPdFfXlTfphIgAJWaK8I4oeJESjBGEEBK/grXuOHiYQ0kreFi8ydHyYGogRjBB9qQluEjlZDqAtcQfS3ZyA7mRNa0yCgRXCRuaMZDeJXCCUYA7VXBEEBK36YSJSvVV9a51QBlGAMUF/eFI3kbflhImE2sIOfoi8/TPRECUZPMsjRUTGYHyYWoLniZTjKXPlhogdKMHpqJg+gHzILJYMcAYpB/DDRAyUYPdjADr5W1Ey2ZG7yZmgob8UPEx0owejBz6ovbGDHDxMLE6AYTAP8BqIEowPVG5ESdjIntFR05YeJFpRgdKB6I6LJR9GTFlkagN45WlC9EeGzRnWqUzIAJZhyUL0RKQ/VKemPEkw5qN6IaEN1Svqhv6EyUL0R0YXqlPRDCaYMVG9E9EF1SrpRguGheiOiL6pT0o0SjAaqNyKGojol7SjBaKB6I2IoqlPSjhJMMao3IsaiOqXy0blIxcz5fKP/zp3FzZuRuBMTg6SkRHh6NkEz7+bo3KUr3F56if84EQCdp1Q2SjDF9UaDreea3bqGzMxMvD9vDkKPH+PfYsycNQfvvDubHyYCuKL8GxHKE/ywRTOvd5RAzLHe6F5cHAb066M1uQDATz/+gKC+vZGVlcW/RUyM6pRKU7wys/VSftCSNJb7orWiOz8setOnTMKd2BjmumvXOhg50gMTJ3oiMNAZbm62uHEjHQCQmpqKR/Hx6NufSh+EpIAVasgc8EAVwb9lsSy6i6SAFV63XmB2v3V2bt+GDxcvBAA4OVXDihV+6NTJhf8Ybt3KxPjx/+H5c/W4wOdffo3hI0fxHyMmdrjgJyQXxfPDFsm8+gUm1lLR1eySCwBs3bKZ+XjuXO8ykwsAtGzpgKlT2Wrw1at+4twnwuhoNYQfslgWm2DUh5z35IdFLy8vD1G3bgHFrZeRIxvyH+EYN86D+fjxo0dITkri3Cem5yJzh5e8PT9skSw2wbRXBJllHUlM9G3m40aNanDulcXGRgFvbwfm+vLlS5z7RBj+Vub582VqFplgXGTuZltvFBnJDiDWq2fLuVceb2975uPo21Gce0QYNrBDG0UvftjiWFyCkUFu1n3kxGfPmI/t7fWr+G7QgG3pJCUlcu4R4bRQdLH40hOLSzDN5AHmvRtZkeGTfq6ubFP9UbzhsxupqSkIv3AeVy5fwr24OGSkq6e/iXYKWFl8nZJFJRhrVJdUvZFMJuOHyuTjw86UnTt7Bjk5OZz72vx37iw6dWiH4DEjMXrEMPTr0wMB/m3h3cQDLwe0w4B+fTDxrWD88tOPuBh+gf/pFs9N3gwvyb35YYthUQnGT2H+5xsZ3n4BWrd2hLNzNeb6RKj21b+ajh75hx9ipKSkIDY2BmdOh2Hliu8xbvQIeDfxwPixo7Byxfe4dDGc/ykWqYNioMVuYGYxCcZR5ormipf5YdHKzc3Fj98vR/CYkZzXgX17mWf0bMAAAPr3d2M+XvWz/uthVEolP6TThfP/4ZeffsTYUcPRp0c3rF2zGikpKfzHLIajzNViz1OymJW8fawmwU3ejB8WrT27duKDhfP5YY7OnV2wYUNHfrhMCQk56NEjlLle9s1yDB02nPNMWT5e8gG2b9sCAJg61Qtz5rDN/YSEHCQn5yEu7gWuX0/H1atpiIrK1Phsrn6vBWH4iFHo0rUb/5bkFSAPe/O/Qi4sqybMIlowDeWtzCq5AMDTp0/4oVKys/VvXbi52WL4cHZw+9OPPzR4ypo/vuzmZos2bZwwZEgDfPxxa+zf3xXXrvVDSEggZs/25sxeAcA/fx3GxLeCMaBfH5w9c5pzT+qsUR3trQbww5In+QSjHsk3v20wNQdwu3Spg5CQQISEBKJ9+9qc5wwxf34LuLmp187k5ORgUFA/LP1oiUkHZ21tFQgIcMa0aV44frwH1q0LQPfu3Kna2NgYvP3mOEx8KxixMdGce1LWRO5v3jOYRpB8ghFbvVFubi4+WrwIfx/+k3+rXHXqVEdAgDMCApxRuzY7WKvLnj3x+OILdVkBADg6WmPNmg6oXp39Z9+2JQTjRo+Ar08LjHrjdUx8KxjTpkzC7HdnYMG8Obh4sWLJp2vXOlizpgNOnOiJiRM94eBgzdw7czoMA/q/ikUL5nHW90iZOa/BMoakE4zY6o2ys7Mw8a1g7Ni+FbPfnYGtf7BFi8bQNsi7du1dfPDBDWzefA8TJ7KzOc2a2ePAgW5o04abdHOys3H16hWcOR2G0GP/4u/Df+LAvr24e+cO5zljubnZYsGCFggL64X//a8J597ePbvQ9eUA/Pj9ck5ciiytTknSCUZM9UYvXrzA+LGjOVO3n3z8IXZu38Z5rkQRf8CjWDlhjvXr47B8OVuzdOZMEoKDzyM3Vz1m07ixHXbt6owffvCDv7/xXS5j2Noq8N57zXHiRE/07VuPc2/VLz/htb69cOvWTU5caiypTkmyG065yNwRYCWOVZSZGRl4c9xoTh1RiROhx+BUqxbatvVlYmGnTuLPgwfw6JF61W2LFg7o3Vv9Zvz77ye4e/cFUDxO4+1tD3f3ksHUmlj96wN8913pr/P4cQ4uX1agX9A0WFfvCsi7oan3IAwbMQlBAwajeXMftGrdGgEdAzmv7KwsJCaqywvat69d7tYQhrK3t0b//m7o3LkObtxIR2pqPgAgLTUVO7ZtgYODA3z92vE/TRKsUA0yyPGkKJZ/S3IkOU0tgxyvWc8QxYBaWloqxo8dzamCHjWqIa5fT+dM6c5/fxGqVa+O1T//hNRU7pqR0aM9sHRpawDAvHnXcOjQY85917qumDFzNh4/eoTffl3FxH19ndCwoR0OHmSf9/Nrh3UbQ1CzZk0mpo22aWpTWrXqDn78kTvg27NXb6z+bT0nJhVKFOJQwQpkFEm7NkySLRhveUc0U4jjhIC5s97hdIvmzvXGvHkt0L+/G06dSkRKivo397mzZ3D61MlSy/hdXW0wf35z1K1rAxQP1J46lYicHHaKOisrCydDj+PypYtMrE0bJ2zc2BFBQW548aIQ166p64eePn2ClJRk9Or9KvOsNidDjzMtL39/07Vg+Dp0qI1u3VwRFpaErCz1Dnz37sXhXlycJLf6lEMOB5kL4lRX+LckRXJjMGKrN3rxQt2dKdG4sbrl4OhojY0bA+HhUbp0oW5dG0yY4IlNmwJx+nQvTi1Rx47O+O+/Pli/PgDBwY3KnFVq1swe69cHoEYN9fL05s3Z/WBQxvckFm3bOuHgwa6cqfjDfx7EO9P+x3lOKiyhTklyCUZs9UYLP1gC2xrsgrOZMy/jyBH1Ijpn52oICQlkFqQ5OFhjwYIW+PffHli4sAUCA50BAMnJebh5MwM3b2YwLZ4uXepgyZJWCA3tiVmzvJlk4ulZE5s3BzLTwXv2xGPhwuvFXx1wcqqF2XPmMdeG0DZrZSpOTtWwZUsnDBzInuf079EjmDJpAuc5qZB6nZKkxmDEer7RzcgIBI8ZyTk6ZMWKdujfvz4A4OnTXPz1VwKGD2/I7PGyefM9nDiRiGvX0pGdzT3My97eCn5+tdCrVz2MGqXeMjM9PR87d8bjjTfcmVbNrl3xWLLkBvN5Tk61sGXHLnh5sfv06qI5BjNlihfmzq2837jvv38d+/c/Yq47d+mKDZv+4DwjBVI+T0lc78QKClAMEl1yAYBWrX0Qsm0nHBzYrsrs2Vfwzz/qlky9ejZ4+21P2Ntb4ebNDAwYEIYvvriFc+eSSyUXAHj+vBBhYUn4+OMIvPHGWdy58wJOTtXwv/81YZLLnj3c5OLs7IytO3YblFyq2tdft8WIEeyew2fPnEbwmJHIzc3lPGfufBQ9RdXqNiXxvRuNJPZ6o1atWmPTlu2cJPPhh9zp5FWrYjF06BnExj7nxFE8Ve3lVXrmJyIiHUFBp7Bx4z0m9uJFIT79lF1L4uLigj+27UITLy8mZi4++8wH48Y1Yq7DL5zHrHemcZ4xd1KuU5JEgjGXeqOWLVuhR6/ezLWTE7tsftGi6/jxR/YgNQBYvLgljh3rgejoIOzf3xWHD7+C6OggHD3aHbNmcbsqy5bdwjffqIsXa9a0gq2tgrkXNHAwPJtwV8+akw8/bIWJEz2Z65MnQiW36leqdUqSSDBiqzcqz/17cZz9XKZNU3dXNmyIw9697FiDh4cdDhzoivHjG2ssomN5eNhh+nQv7NjRGfXrsxt/r18fx4xZTJvGtla2b/1Dr+psMVuwoAWGDWPfgKt++UnrZljmSIp1SmafYMRWb6TNlhC29qhRIzsMHdoASUl5WLGCXWDWtKk99u/vUmpquSy+vuppXc1tEb788haePy/Em282Rr166rUzeXl52Lt7l8Znmqcvv2wDX1/2F8mC92ZzFjCaOxeZOxrL2RXdUmD2CUZM9UYlrl+7ivAL50u9jh//l3nmrbcaAwBWr45FXp6Kif/wgx8z5awPBwdrLF/O/lBmZBRgw4a7AICRI9lD147881ep7yf8wnncLKN8QcxWrerAbP+Zk5ODKZMm4Pnz0mNW5spf8Zrofp4rwqynqV1k7giynskPV6lRw4fi6pXL/HApYWG9ULeuDfz9j+DFC/VM0bx5zTF5snFjJd9+G4V16+KA4tW/p0/3QlRUJoYM0b2xU4+evfDr2g38MFDF09TluXYtHSNHnmWuB78+FN8s/4HzjDmLVJ7EZeVf/LBZMtsWjBjPN0pKTNQruXh7O6BuXRtcuJDCJBcAnNkSQwUHq1tEAJCYmIuYmOdo0cKB6SZpcyL0uFlN/fr6OnFqog7s24srEjqxsoWii1mMKerDbBOMGM83Uqp0b2FZs6YVpk9XD8BqFjt6eNhxZn4MVa+eDefzS/7smTOb6dXlUhqxuXdVmjrVC40bs2tHFi9awLlvzhSwQkczmBXVh1kmGLHVG5UnOjqo1Ovy5b7o10+9gjcjo4B5VvN4V2O1bu3IfJyWpi4peOMNd1y92rfU93HxIrfYsbz9Z8Rs2TL2+N+4u3exYd1azn1z5i5vJYk6JbNMMG0UvSSx8rGggB3c1dxK0li1a7ODg3l55tUiMYafXy2MHs0OZK9c8R2SiveukYIOioGiXJluCLP77h1lrmih6MIPi9LKlTH46Sfua+PGe0zrQrMSOjq64jMht2+zXS5nZ3WySUrKw4YNcaW+j99+U880ldD3lEixWbCgOVxc1P+vOTk5WLP6F/4jZkv9s96ZHzYrZpdgAhSDzKb69JdfYvHzz9zXsmW3sGaN+s1dkgRQvOS/InJzlXjwgC2mLHnTff/9bXz9dVSp72PtWm6CMccuEgDUqGGF6dPZ+qrdu3aIdjsKY/gqXjXr1rpZJZiX5N6irjdydGDHQLQ5eFC92lZz0RgA7NvHruY11PbtDznX7drVAgAcPfqUEy9LjRp2eu9wJ0ZDhzaAnZ36l05OTg727NrBf8RsWaM6/MxgvLE8ZpNgFLBCB8VAflhUbGvUwMIPlqDTy51L7W0b0JHdYS8lJR8REenw8LDj7O7/9ddRzG5uhkhLy8fKlWwdU7dudeDgYI0zZ5KYaXBbW9tS309Ax0B07tIVCxYu0vjTzI+trQJjxrBjMb+vX8e5b+6ainDGVF9mk2BaKrrCUcY9wEuMJkycjI0hWxGydUepV/cebElDaKh6MHLCBHb9SlpaPlas4BY86mPZslucxDRhgrow8Phx9qyhV/v1L/X9hGzdgQ2b/sDoscHMc+ZKcw3RkycJCD3Grpo2d2Jc86Uvs0gwNrAzm3ojbTQrqbdufYDnzwvx2mtunOnlzZvv4fff1Sty9bF69R0cOMBu6t25swteftkFycl52L+fjffq1Yf5WIrq1bPh7IJ36OABzn1zZ651SmaRYNpbDZBEfcbAQUPg7KzeBjM9PR/LlqlPXfz5Z3/ONPVXX0Vh2LAzzPEkZYmMzMDAgWGcQsl69Wzw3Xd+AIBPPolkNqtq4O4uyY2z+QYNYhPMmdOnOPekwBzrlESfYFxk7mgi9+eHzZKdnR1e7ce+0ffsUZ97VL++LdatC2C2y0RxAnnttVMYODAMn3wSiUOHErB37yN8/HEEgoJOYdiwM4iJYae2nZ2rYf36jqhVqxoyMws4g7sDBkpjVagu3brVYT7OzMxEZAS7o58U2Mmc0EbRix8WNdEnGHPte5Zl0YJ52LYlhLnu0YMdU2rb1gm7d3cptf9LTMxzbN36APPmXcWiRdexfftD3LnDbdl4etbEnj1dmB3vHBys4eennkUCgF9X/YwvPpXc6TRl6thR3UIEgNNh0mvFmFudkqgTjJe8vdmOnvPNnTUTe/ewe7L4+Dhh+XJ1d6ZEo0Z2OHSoG+bO9Yajo+6VvS4u1bF4cUv8/fcrnI2nAOC33zqgaVO2/GDzpt/x4eKFnGekqEsXthVz9ozuSnJzY251SqJNMNaoDn+rIH7YLL03+10c/vMgc+3nVwubNnVEzZrqLtH16+mYPfsK1q9XD+5OmeKFsLBeWLGiHfr0qYeAAGfOq1+/+li9uj3Onu2N8eMb4/nzQqxadQfvvXeVWc3r4GCNLVs6oUULduOqndu34dOlHzLXUtS5M3sw3MXwC8jJzubclwJzqlMS7X4w/orX0FrRnR82O99+9SXWrV3DXLdvXxtr13ZgKpxPn07CpEnsyY/OztUwbVpTDBnSgDMmU5aMjALs3h2PNWvuMIWTtrYKrF8fwBxqn5lZgPHjz3Mqt+ctWIjJU/TbOFuM+8Ho4u19mPl45579aOvLbSlKQUZRIg4UfI8isPVsYiTKFow51RvpcurUSc71p5/6MMnl5MlETnJB8SK8zz+/ifbtj2Ds2P+wbdsDzv3cXCU2b76HUaPOISDgKL75JopTlZ2To8TEieG4eDEVKG7JfPKJj8afIM2xCU2a3cVECRU/ajKXOiVRJhhzqjfSZdqMdzjXU6deRFJSHk6eTMSUKexZ0i4uLnCtW5fz7KVLqVi6NBLr1rF1Q6tW3cEXX9zC1atpnGfd3NxQq5a61ZKTo8TkyeEID09BfHw2pk/nbsY0ecpUzrXUuLlpJJhn7GJDqTGHOiXRJRix1xsZKmjAICxazI57PHyYjREjznKTS5062L57H06fC8fiDz8u1aTXnDWKi+POIPm374Cln32BE6f/w5btu+DgqF60l5OjRHDweYwadQ7JyXnM819+/S26djP/rqc2bm7sLn5JSdJswcBM6pRElWDMod7IGG+9PQlz57E7riUk5DAf16pVG39s3Ql3d/UJhuPfehs79+zHDyt/Ru3a7JQrXx1XV/y6dgO27tiN0WPGAQCaeHlh0x/bOIWLmsll6WdfYNgbI5hrqXJzY6f6pdyCgRnUKYkqwZhLvZExpkybgenvvMuJ1axZE5u3bENjT/ZQsRL34uKQmprCDzOSEhPx8MF9fhgtW7bChk1/wMaGuxfvosUfMolI6uzs2K1Dc3LYZC5FYq9TEk2CkUq9kTaz5ryHiZP/B5Qkl6070My7Of8xQMsGUOWEOdr6+mH9xhDY2qrHIuYtWIi33p7Ef0yyCgvZiVHrarrXE5k7MdcpiSbBSKXeSJcFCxdj++59OPTXUbRq1Zp/22TadwjAwb+OYM/+Q3pPSUtFYSE7dWtlJY3JAl38Fa+JcmJEFAlGSvVG+vDzawe3l9jCPF1On05CcPB5BAefZ6af9dGwoQda+7ThhyVPswVTzZrdllTK1Cec9uCHq5woEoyY+5BVRbOLlJych/DwFISHpzD7+QKAXGH8MSdSxukiWUu/i1SitaKH6OqUqjzBSKneyJT82ulu0fn5teOHCK+LZAljMCUUsEJ7hbjKa6o0wUip3sjUAju9jGMnT5faga7kdSLsnEV2f/SRlMROzTs7s8WPlqCRvC3qy9lN0KtalSYYqZxvJBR394al9tAteRkyhmNpYmPZfXKaeKlP0bQkHRWDRXOeUpV9F1KqNyLiorny2RITjKPMFc3kAfxwlaiyBCOleiMiHpqtFxS3Ai2Rr1VfUfQOqiTBSK3eiIiH5jaizVu04NyzJDawE0WdUqUnGKnWGxkiNzcX4RfOc14Xwy/wHxOdhIQcZrrc0FdOTuWcla15BK+np+V1jzQ1lQdUeelNpW845aPogXaK/vywxXhw/x5eHxSErCz2mNcStWs7459/Q+HoJJ61DFMnvY0TJ47zwwZzcLDGxYuv8sMmN2TIaWZzrQULFzOlGZbqiSoWRwvX8sOVplJbMJZQb6RLWNipMpMLAKSmpuDChfP8cJVKTk7ih4ySmVmAp09z+WGTevw4h7NzXz8LOKpFl/ryplVap1SpCcbPqq9F1Btpo1Jq7yooCw0/OlZIDT3YExMrql49boW3qR0/zh7V0sTLCy81aMC5b6mqsk6p0hKMi8wdTUUydSaka1evYuBrfTFh/FgkPGZPVixL3771EB0dhLZt2S6RXF76nyQ2JhpvvD4Io4YPxd07d/i3BWVvz55MMGWKF6Kjg/R+LV3KFnNqnl4plH//Zfd+6d2n6gc4xaIq65RK/zQLpKPVENEs/hFK9O0oTHxrHGKib+Pc2TMYN2YEkrTsCVtUxuhXES/44P49jB87GhE3ruPqlcsYP24UHj96xHlGrCIiMpiPfXyEHVdKT89HeDi7f07vPsKP95iTqqpTqpR3fGO5r+Trje7FxeHNcWPw4gW7yOvxo0cIHjuS2TgqLS0VDzQ2iSprb5e7d+8wf0Z8/EOMHT2Cs/FUclIS3hw3GslJphkbEdLNm2yCEboFc+IEm8jruLqiTduqG3cQo6qqUxI8wVijOvwV0h5sS3j8GMFjRyItrfRWCvfi4jB+zCi8P28uAtv7YUvIZo276gwjl7OZZuWK7+HfthU++fhDBI8eWWYLKD7+IcaPG4WM9HT+LVEpOaMJAFq1EjbBHDtG3SNdqqJOSfAE00bRq0qaZpVpzqwZTCKwsVFg48aOmDGD/YeMjY3B/n17ND5D7ZVX1IV4XbuWLsjb+sdmPHmSwFwvXdqaOdgeAO7euYNPPhbvIWrXr3OTn+YBcKaWm6vEsWPsAC91j8pX2XVKgn4lO5mTxdUbFRUVQakswrvvNsNbbzXm34a/f23Mnu2Ngwe7Ytgwdbdxxoym2LbtZUyf7oWWLUu/ERctaonRoz2gVJYxaCNSmt0jzUFsIRw4wA6m29jYoEvXbpz7hFXZdUqCJpgOioFVNj1WmX748RfUq1cfAJCXp8LEieEIDX3GJAYU/wbfvDkQW7d2wqBBL+Hu3Rf49tsoTJ4cjh9+iEZqah6Cgxtj376u+Oknf3h4qOtIZs3yxltvNcbu3fFYsOAa8zWbeHnho08+Za7FJjKy8sZffv2VnVkbMWoM5x4pzdeqL+SonM3KBE0wlsLtpZeweet2uLiw5yJPm3YJoaHPsHRpa+zY0Rn793dF48Z2mDDhAnr2DMWcOVexbl0cwsKS8OuvdzBjxmV06vQv5s+/hsBAZxw92h27d3fG9Ole2L07HosX32D+bA+PRgjZuhNOTrWYmNhoJhghx1/27InnHAPzPwvbf1jsBE0wF5WHoIS4Fo4Jpaw3/UcfRQAAfH2dsH//IwQFheHcuWSNzyrt4MHH6N//FMLCkuDj44Tnzwvx2Wc3mfsvNWiAzVu3w9m5/DOTxCA6mh3gFXKK+uefY5mPR40eizquVVt7Yw6uFR6BCtoXfJqKoAkmqygdUcoz/LBkeTZpgsCXX2aunZ3Vq5Z3747H++9fR2Yme4Z0rVrV8Morrpg0yROdO7twDrpPTs7D5MnhCAtLgr29FWxs2OZs3379me6YWF27xh3gbdaMXaxnSgcPPua0XqZM5x7TS0rLKEpEjIp7HrqQBE0wAHBDeRxZReKeTjWV5KQk/PPXYeZ6+nQvJCTk4PPP2RaIg4M1PvvMB+fP98Fvv3XA/PktsGFDR1y61Bfz57fgJJOFC6/hxYtCTJ/OVgXv3L6N+VisNAd4/fyE68Zptl6GDhsONzc3zn1S2gXlARSB3bNYaIInmALk4bLyL35YEvhbLmzauIG517KlA/r2rY+FC68zWxU4O1fD4cPdMGJE2ZsgTZrkiX37uqB6dfU/S0pKPpYujcCbbzaGq6u6jufFixfY9Pt6zte9cpl7uH1Vi4xkf6EINcB7+HACHjxgi0anzqDWiy73VdfxRMUm5cogeIIBgHuqa0guiueHzVZeXh46dWiH4DEjOa/ffl3FPNO/vxtiYp7jwgV2Fe6nn/owiaI8np41sWABu1HSoUMJyMgoQJ8+dZnYl59/yvm6o0cMQ+/uXZn7Va0yZpB+/DGG+XjAwMHwMGFRphQpUYhLSrZ1XVkqJcEAwIXC/ZXaNBPSs2dPtZ4bjeJCxlu32Dear68Teveux3mmPOPGNeJUHkdFZaJvX+3jLvHxD3H1ymV+uNLl5io5u8q1bm36Ad6tWx9wWi/T3pnJuU9Ki1SeqJKhikpLMMlF8YitxMElIWkWJNasaYWAAGfmFRjojEWLWsLDww63b7NvtDZtDHujac683L6diY4dnTF1qhfnawUEcGeSRg0fCu8mHvBu4gFfnxYI8G+LLp06oOcrndGvTw8MHvAqhg99DcFjhuCDhf/Drh3fIi3lKKAKBVSHAdUuQLkZUK4BlCsA5ZdA0UXO19BFcz8WGxsFvLxqcu5XVEJCDr766hZzPWr0WHh5Ve7yd3OTVZSOCOUJfrhSVFqCAYCrhUdQAPbMGilo2tQeISGBzGvTpkBmBa/mb9mGDQ3bgLlRI/b5+/fVf86cOd6crxUSEgg3N/UB93w52dnISE9HUmIiHj96hHtxcbgdFY0b128i/MJV7Nl1BEs++BmBAZPxv0nvI/HpHkB1Aig6DxRdB4pigKJHAAzbJEro9S/vvXcVeXnqlnDduvXw/geL+Y8QnsvKv6psuUilJphcZOGa8ig/bNZiY58z50YHB5/Hm2+ex8aN9wAAjRuzSUIz2ejj4cNs5uOSZLNiRTTnawUHn+dM0xrr1KlEDBp0WucaHX0IWUG9bdsDXLmSxlx/vfx71KhhWOK2NE9UsbinYleAV7ZK35NXBjkGW8+t8s2IK+LBg/t4tecr/DDHkSPdERGRgXnzrgIA2revjS1bOvEfK1fv3icQH69OMiEhgVCpgDff1L6d5uKPlqJ5c/UAcVZWFvLz85Gfl4c8jVd+fh4KCgqQn5+Ps6fDcPNmJOfP2LQpEIGBbNfr448jsH37Q6B4w6m5c701ni5twIAw5uiQ5ct9MXCgaQ6IS0jIQb9+J5nWy6Ahr+Pb71bwHyMaiqDCgYLvkVFUuiK/slRqCwbF/9MXlYf4YbPi6Kj7N/PRo085hYuXLqXi8uXS2zmU5fjxZ0xyQfH4zZEjTzjPlCVowCDm5McePXuhb7/+GDh4CN4YMRJjg8fj7UmTMXX6O5g5aw7em/8+9h48jN83b+GsCp4y5SLu3TOstVUiN1fJOZfIlAO8ml0jRycnLPlwKf8RwhOrCq/S5IKqSDAA8FgVjXgVu/jM3Dg51cKPP63CO+/O5ry6dGNbNf/88wRNmtRE585sfdKsWVeQnKx9DOrevSzMn882aYcNc4eNjYKz30n/oAGcr/vu7Ln4bf1Go8oHXu7cBbv3HUKtWrWB4iSxciU7BWwI/gCvZhexIvhdo88+XyaqkxfEKBdZuFp4hB+udJXeRSphJ3PC69YLJFVtfeP6NQwfOpi5DgkJhIeHHfr1O4XsbPUgm4ODNRYubMFs1aBp3bq7+OmnWOTmqhfmubra4O+/X8G//z7FwoXXmefO/HfR5DU3586ewYTxY5nrw4dfgZdXTYO6SJs338cXX6h/cQQEOCMkJJD/iMH4XaPuPXpizbrf+Y8RnvOFexGt0t6lrgxV0oKBROuU2rT1RWufNsz1mjV3UbeuDZYsacnEMjML8MEHN9CjRyiWLbuFo0efYunSSHTq9C++/fY2k1wAYNmyNqhZ0wpr1rDbEfTt19/kyQXFLRm/dv7M9c6d6qRiCFMP8ObmKjF16iUmudjb2+PLr5fzHyM8lV1vpE2VJRhIsE4pOTkZhYVsQeONG+r/t2HD3PH11205BY0JCTnYuPEeZs68jG3bHiA1NZ+55+JSHWvXBqBLlzp4/ryQMyaSnp6O7Gzjxkh0GTM2mPn41CnD++6mLhGYPfsKpyr7x59XG9UNtDSVXW+kTZUmGCnVKSUnJ2Pc6OG4HRXFxJYtY1szQ4Y0wOHDr6BTJ3ZMpixBQW74++9X0K2behtNe3srfPKJD3P/wvn/MH7saM7m4qbSpRu7E9z9+1mcqXJdcnOVuHOH/Z4qmmCWLbvF2cj7/UVL0LmLeMohxKoq6o20qdIEA4nUKT179hSjhw/Fvbg4JrZ8uR96966HI0eeoEePUIwd+x/u3n2BjRs74tixHli50h8TJ3qiW7c6mDrVC6tXt8e5c33w/fd+OHcuGcOGncGrr57EuXPJGDWqIRYuZOuTIm5cx/gxI5GZwXZJTKF2bWe4vcROK8fEsK0HXW7d4g7wluzIZ4xt2x4wa4kAYOCgwXh70mTOM6S0qqo30qbKEwwkUKf07oypePjwAXP92Wc+GDjQDXv3PsK7715BQkIOLl1KxYQJFzBmzH/4888EeHjUwIIFLbB2bQDmzPFGrVrV8Mcf9/D666cxa9YVREZm4MGDLEyYcAGhoc8wYYInZs5sxnyNmzcjsfSjJcy1qWjuNZOZqf/qT83uka+v8TM8Z88mY+lSdm1Oa582WP7DSs4zpGxRyjOiG3IQRYIx9zqlrBfsmIidnRUaNrTDjh0PsWgRO/NT4vLlVKxYEY3Bg09j9251y23lyhiMGnUOq1bd4bQESkybdglHjz4t1Sp4/rz0sxXV2NOT+fjSJf3W7aBUBbVxCSY6OhMzZrBbT9SrVx/rft/EeYaULasoHTeUx/nhKieKBAMzr1P66JPPmI+zsgrx5pvnme0yUbxu5vWhbzDXJU6fVh+eVtYS/ZGjxsC2Rg3meubMy8yqYACws7PD/PcXMdem4t++A/NxUpL+dUgV3aIhOTkPb78dzuydY1ujBjZs+oNZn0O0u6z8S5TvH9EkmFxkIUIZyg+bhYCOgdi8ZTuqV1dvkanJ2dkZ23buwVfffodTZ8/j3dlzmZ3XVCr1EqSS/zZq7IkPlnyE8MvX8ekXy7ApZCvs7EqPZTg4OGDL9t1o5t2cf6vC2ndgj7QID09l3vAo5yRKFA/w3r1r/ABvVlYhJk0K5yxCXLHyFzTxYnfyI+VLLoqv0nojbUSTYADglvJ0lS9tNlbHwE5Y9/tmTpJxrVsX23bugWeTJkBxk79mzZpISFAfqMY/m/r+vTi4utZlVqm29fVDyNYdcHBgSw4cHBwQsnUnWrRk19aYkodHI+Z0hNxcJWd1bnk0Wy/29lZwd2dbXvqYPPki5+vMW7AQ3Xv05DxDylYEFS4U7ueHRUNUCUaJQrOuUwroGIgNm/6AnZ0dGri7Y+uO3fBoVPrwtRJltQhkvGCr1j4I2boTtWs7w9nZGVt37EbzFuyMkhAWLGS3QNDcPKo8mgvsDN33ZsaMy5wardeHvoHJdPSI3mJV4aKehRVVgkFxnVKCyrhaGDFo3yEAV27cwvGTZ+DuXvbeuyUuXkxFcPB5zvqRsjRv0QL/XbyCc+FX0LRZ+Uv1TWXw60Mx6X9T+eEyEyIAREQYtwfM+vVxnCNfXx/6Br769jvOM6R8BcgTRb2RNqJLMAAQrjxYZRvkCE2uYE8NSEvLR3h4CrKy2P9XmVwc/yTz31+Ed96dzYnxu3QluCUC+rVgLl1KxTffsIsSBw4aTMnFQNeUR5ELYVZ1m4o4fpp5MooSJVenVMLPrx0/xNFOox6oqs2cNQdBAwYx12UlmNxcJeLi2BaYj4/uFkx6ej5mzbrCXHt4NMJnX37NeYZop36PnOWHRUeUCQbFdUpiz87GaO3TBifCziFk645Sr/8uXhGkkLEi7O21H5qm2T2yt7cqdwtPTTNnsttW2NraYvVv62Frq/vzCOui8pBZLE6tsu0a9OElb4/OViP4YVKJPl7yAbZv2wIAGDjwJYwYwd1m4p9/nmDLFvUqZh8fJyxYoH3qfPfueBw48Ji5XvnzavTt/xrnGaJdvOomQgvNYwGiqBMMAARZz4SLrPTeKaRyTJ30Nk6cEG6F6OYt29ExUP+tRC2dEoXYV/CN6EoCyiPaLlIJMc/xW4JHj4SdAj12VNyzIGIjxnojbUSfYJKL4nFXVfUHilkqzTOghKBUsSuFiXZirTfSRvRdJACwgR2GVlsIa5Reik+EFdS3N+7cUe8vomvLTH19+20U1q1Tb20xNng8PlrK1nKR8oUVbhVtSUB5RN+CgZnXKZm7DBPvOUOMI+Z6I23MIsHAzOuUzFl+vvgqdC2N2OuNtDGbBGPudUqEGEvs9UbamE2CgQTqlAgxlDnUG2ljVgkGEq9TIoTPHOqNtDG7BCPlOiVCNJlLvZE2ZpdgIOE6JUI0mUu9kTZmmWAKkIfLheI6noEQU4pX3cRjVTQ/bHbMMsEAwB3VJbMdWSdEGyUKcUF5gB82S2axkrc8LjJ3BFnP5IeJCQW0a8MstvP3r41OnSp+dOvZs8m4ejUNoJW8ZYpUnpTMiadmnWAAoIvVSDSRi2eTJqnRTDBCoATDlVWUjgMF34nyCBJjmG0XqcSlwj8l848hRtbW1fghk/L0pKNJNIn1fCNjmX0LBgB8FD3QTtGfHyYm0L9PT8TF3QUq2EW6di0NZ86oD5hr4uWF/q8NgLOzMwYNGYqaNWvyH7dIyUXxOFzwEz9s1iSRYBSwwuvWC2An02/DaaI/U1VT//57HL76Sr3Jd99+/bHyl1/5j1i0IqjwV8Evkpu4MPsuEopH3cMlMupOLJM51xtpI4kEAwAPVTepTomYJXOvN9JGMgkGxXVK5r7ykVieCGWoZFemSyrBZBQl4rbyHD9MKkDzXGxiehlFibilPM0PS4akEgwAXFUekexvg6rQyLMJP0RM6KLykKR3B5BcgilAHq5JtD9bFapZW/NDxEQSVDGSqDfSRnIJBgBiJDoiT6RDPfN5kB+WHEkmGHPew5RYhijlGYvYY1qSCQbFqyLvq67zw4RUuVxkmd35RsaSbIIBgEvKw5Kq6yDScLnQcn4uJZ1gsorS6TwlIirJRfG4o7rED0uWpBMMis9TMqezfIm0WdrYoOQTDNUpEbG4q7pscbObkk8woDolIgIFyMOlwj/5YcmziAQDqlMiVUzK9UbaWEyCoTqlqpWczM6a1KvvxrkndVKvN9LGYhIMqE6pSv33XwrzsZ9fO849qZN6vZE2FpVgqE6pYmQyfkQ/GzbE4eZNduNw33aWk2Asod5IG4tKMKA6pUqRm6vE338/weLFN9ClyzF8/bV6q0wAGD5yFOpbSBfJUuqNtLG4BEN1SsJKTs5Dt27HMXv2FezeHY+kJHbspU1bX3z+5dec56XMUuqNtLG4BAOqUxLU8ePPkJFRwA9j9Nhg/L55Cz8sWZZUb6SNRSYYUJ2SYKKiMgEANjY28PNrhxGjRmP7rr1Y+unnFnU8iSXVG2ljsQmG6pQMV6THATclg7m5ubnw8/fHZ198Bb92lnXypqXVG2ljsQkGVKckiBs32L/PVq19OPcsBY3xsSw6wShRKJlDxsVg586HnOvuPXpxri2BJdYbaWPRCQYA7qmu4YlKfXIhMV5KSj6WLWOnowcMHGxRYy6w4HojbSw+wQDABeUBqlOqoA8+uI7sbHa16rtz5nLuWwJLrTfShhJMca1IrCqcHyZ62rjxHk6eZNd7DBg4GB4ejTjPSJ0l1xtpQwmm2NVCqlMyVEpKPqZNu4Rly24xsbp162HJx0s5z1kCS6430oYSTLFcZFGdkg6atUjHjj3FgAGnEBr6jIk5ODjg981bUKtWbfZBC2Dp9UbaUILREKMKt/il3drs2ROPUaPOISDgKGbMuIzU1HzmXgN3d+zccwBNvLw4nyN1VG+kHSUYDUVQ4QJtr1mupKQ8XL2aVqoUoHefvth34DAae3py4paA6o20owTD80QVS3VKGmo7O/NDDP/2HRCydQd++fU3ODg68m9LHtUb6Sb7KHqkHgvALYudzAmvWy+AAlb8WxbnyZME7N65Ay9evIC9vT0cnZzg5uaGDgGBcHBw4D9uUc4X7kW06jw/TDRQgimHr6IP2ir68MOEAMX1Rn8V/ELrp3SgLlI5IpQnqE6JlOtC4X5KLnqgBFMOqlMi5bmvuk71RnqiBKMF1SkRvgLk4ZLyMD9MykEJRgeqUyKaIpSh1HU2ACUYHahOiZTIKkqneiMDUYLRA9UpEQAIVx6geiMDUYLRA9UpkQRVDB6qbvLDRAdKMHqiOiXLVQQV1RsZiRKMnqhOyXLdVp6jXy5GogRjAKpTsjy5yMJVJXWPjUUJxkCXlIdpoM+CXCs8QucbVQAlGANlFaUjUnmCHyYSlFwUjxhaolAhlGCMQHVKloHqjSqOEowRqE5J+qjeyDQowRjpnuoa/QBKFNUbmQ4lmAqgJrQ0Ub2R6VCCqYDkoniqU5IYqjcyLdrRroJkkMMa1flhYqaUKIQS3E3NifEowRBCBENdJEKIYCjBEEIEQwmGECIYSjCEEMFQgiGECIYSDCFEMJRgCCGCoQRDCBEMJRhCiGAowRBCBEMJhhAiGEowhBDBUIIhhAiGEgwhRDCUYAghgqEEQwgRDCUYQohgKMEQQgRDCYYQIhhKMIQQwVCCIYQIhhIMIUQwlGAIIYKhBEMIEQwlGEKIYCjBEEIEQ0fHGiD6ZBLys5X8sF5kMkBuJYNVdQVsHaxg51wdTvVtILeS8R+tVGmPcvDoRgY/XErDdk5wrGfDDxst5UE27l9M44dLsbaRo82A+vyw0R5HZOBp9At+uBQnNxs0edmZHyYGogRjgB2zryPtcQ4/bDSr6nK4NLZDAx9HNGpfCy6edvxHBHf0uxjEnU/lh0tp3tMV3ad58sNGiz2djOMr7/DDZRq0tCXcWjnwwwYrUhVhx9wbSNfj39AzsDZefa8ZP0wMRF2kKlSYp8LT289xadcj7H4/AvsW38SdsylAJaX854l5erUiAODO2WTkPi/khytFxF9P+SGj3AtP0yu5ENOhBCMiz2Ke49iKWOxdHImkuCz+bZO7eeQZVEr9sllhngq3QxP54Upx/2Iq0h5VPDHcOPyEHyICowQjQomxL7BvcSSuHUjg3zKZwjwVok8m8cNaRR1LRJFKv4RkSkVFFU8OCbcy8fT2c36YCIwSjEipCotw/o+HOLnqriBv6phTScjJLOCHtcp4mosHl9P54UoRG5aM7DTDvl9NEYdN080ihqEEI3K3TyTh5Oo4FJkyxxQBN48+40f1YuznVVRhvgqR/xiXJNIf5+D+Rd0D2cT0KMGYmFV1OarVUJR+2Sr4j+ot+mQSrux5xA8bLf5GBlIeZPPDeom/lm7SmTRDRB1LREGu4csEbhx+atoETfRGCcbEXn6rEd7e1KH0a3MHTNoSgDE/+6HHjCbwDKwNmQFLYC7tfITHkZn8sFFuGtkSKHGriloxOZkFuB1q2LhRdnoBYsIM+xxiOpRgKpFVNTkc6laHd/c6ePW9Zhj2lQ/qt9RvfUdREXD29/tQFVbsV3HGk1w8uKx9alphrf3HIuZUMgpyDG9JmELkP0/1nvkCgJtHnqIwT8UPk0qi/SeJCMrF0w4DljRHs24u/FtlSn2YXeHfxjePPNPaXXCoa4M2QfX4YY68rELEhCXzw5Ui40muXgsDUTxTduvfqplaJ2qUYKqYwlqOHu94waN9Lf6tMt2owGxIfo5S59S0d/c6aN7TlR8u5da/VdNNggHrWW6HJiInw/iZJ1JxlGBEQCYDekxvAvs61fm3Skl9mI3EO7pracoSfSIJeVnlr8aVK2Tw7u4Cx/o2eMnHkX+bI+VBNh5H6K5hEkJi7Aud41FFqiJE/G18MiamQQlGJGzsrdB2oH5FfQ+vGL4WpahI9+BsQz8n1HRRJznvV3R324Scsq5WQwEbeyt+mKGrFRN3PhUZT3L5YYY+yZxUHCUYEWney1Xrm6rE02jDV6Q+vJKmc3rZu0cd5mPPQGed38v9i2l4kZzHD5uEVTU5mr3Cfj98Dy6lIfVh+VPt2rqSds7V0LhjbX6YCIASjIhYVZPrVTWs7Y1Vnsh/tLc27JyrwcOfHQeyqi5Hk07atytQKYsEHURt3a8e5Iry5/LLSyKPIzPxLKb8JNyyT10oqnibDEtBCUZk6jW354dKyU4vMGhfmrRHOYi/pr1b5f1KnVJvZu/u5bcgStw+kQhlgTDTwA51q6NRh/IHv2NPJyMrLZ8fRoSW7pNVdTla9tY9iE1MgxKMyNjVqsYPlSnvRfmDtXy6ltjLZNzuUQnXpjXh0lj7HjXZaQW4ey6FHzaZ1v3KnzJXFqgQ+Te3ZZYan6N1nU/TLi6wdbTmh4lAKMGIjI2Dfj/8+i6Zz8sqRKyONSsN2jiWu1udPq0YIbtJbq0c4OpVkx9mRB17xln0F3H4idZ1Pq361eWHiIAowYiMqlC/7oa+W23ePp6EfB2rbr17lN9laNrVRefK3qfRz5EYa9zUuT5a9S0/KeQ+L0RU8T412WkFiD1dfjJt0MYRLo2KW2SG1GkQo2n/ySGVTt9d46xtdBdPFqmKcOuY9sFdW0drNA4of5zDxt5K6/0SQk5Ze3V2hl3t8ruOkX+rN86K/OcpCvPLT9DaultEGJRgRCbzme5pX7mVTK9xhPsX07SuBYGeLRR9ukl3/0sRbNWswlqOFloGZjOf5eL2iSREHSu/q+bkZstZLU0NmMqh/SeLVLonUdpXqAJQn0agZfq2hD6tCn3KAhq0dYJDXe0L04TeUrNln7qwqlb+j+vZDfe1bqDVqm9dSipVoPx/MVLpstML9NrWUdugZ4mU+9k6jyORW8lwbuN9/PlZlNbX4c+joMzXMnJaLOq4cFtq1nCyhlfn8tflaJsqr25nVeYsGREeJRgRifhL+xhCCX22eIg8on1qGsXbcj66kaHXq6z1JnyZz/Q/pcAYxo6hePeoU6ENv4jxKMGIRGp8js71KiheKNY4QPsy95zMAtw5I9zaFG2ErLJ28bTDS611J1dNcoWszFko6i5VDkowIpCXVYjjK2P12sSpaRcXVKuh/bfx7ePGbS1pCvHXM0xyxEh5DG3FeLSvVe4aHyI8SjBV7EVKPg4tjULKfd31RXIrGdoO0l5xrVIW4ZaW2ZTKoM/gsrEadagFx/r6J4xyExK1YCoFJZgqUpinwrWDCdg9/waS7+t3yFrbAfXh5GbLD3PEnU/F80TdU91Cig1L1rm4z1gyuQytXi3d5SlLHSO6VMS0KMGY2LPo57gdmljmK/Kfp7i4Ix5Hvo3BpkmXcT7kod4L61w87eD/RgN+uBQhWw/6yssqRMwp7TvnVUTznq6obqd9KwnoWAFMTZjKIfsoeqQw84oStGP2dZ17qgjB1tEaQz5rpbNrkHjnBfYuiuSHOeRWMvSZ01TrmhJdwrfF6zzatnbDGhixvE257+PY08k4vvIOP8yo4WSN8Wv9+WHG2d/vaz2z2q5WNYz5xbfcRYQXdzzC5d3lHwXjGVgbr77XjB8mBir7b5+Ihq2DNYI+aK4zuaB4Q29dGrWvhcYBteHu62T0S5/FeakPs/FIwC01W/erp3UmqEVv13KTC2gWqdKU/y9AqpzTS7YY9ElLuHhq3zIBxYv09Nk2obmWwkZ9eXVx1qsWSsjummN9GzTqUPZ0vcJajpZ9tHWPSGWhBCNSzbq54PXPW6FWA+2DuiWijj3TuUjPoa4N3P2c+GGDVbfTrwDywaU0PE8SbsA5cFxD9HrXq9Sr3/veqFFLR60WtWAqBSUYkanjaYegxc3Rc6YXqtfUPZCJ4hW5+kxNe3evY7KugbYtHkqolEU6NxqvCMf6Nmja1aXUy72t9hMRSOWhBCMC1jYKeAbWRtDi5hj6lQ/cfQ1rZdw5l4KsFO1L+UuOJDGVl1o56JwyB4DbJ5K01glVFVMlWqIdJZhKIpMB1rYK1KhljTpN7NC4Y220H94A/Rc1x5vr/PHqe83g7utk1A++PoO7mkeSmIQMaKbH0SY5GQWIraKyBe2M+IsmBqNpakKIYKgFQwgRDCUYQohgKMEQQgRDCYYQIhhKMIQQwVCCIYQIhhIMIUQwlGAIIYKhBEMIEQwlGEKIYCjBEEIEQwmGECIYSjCEEMFQgiGECIYSDCFEMJRgCCGCoQRDCBEMJRhCiGAowRBCBEMJhhAiGEowhBDBUIIhhAiGEgwhRDCUYAghgqEEQwgRDCUYQohgKMEQQgRDCYYQIhhKMIQQwVCCIYQIhhIMIUQwlGAIIYKhBEMIEcz/AVBACr5Ta7mMAAAAAElFTkSuQmCC";
+
+            // Logo superior
+            doc.addImage(logoBase64, 'PNG', 20, 10, 30, 30);
+            y = 45;
+
+            // Marca de agua
+            doc.setGState(new doc.GState({ opacity: 0.08 }));
+            doc.addImage(logoBase64, 'PNG', 55, 90, 100, 100);
+            doc.setGState(new doc.GState({ opacity: 1 }));
+
+            // =========================
+            // ENCABEZADO EMPRESA
+            // =========================
+
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.text("Instalaciones Eléctricas", 20, y + 6);
+            doc.text("Tel: 263-4548407", 20, y + 12);
+
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text("PRESUPUESTO", 150, y, { align: "right" });
+
             doc.setFontSize(10);
-            y += 7;
-            doc.text(`Fecha: ${formatDate(presupuesto.fecha)}`, 20, y);
-            
-            // Línea separadora
-            y += 5;
+            doc.setFont("helvetica", "normal");
+            doc.text(`N° ${presupuesto.numero}`, 150, y + 6, { align: "right" });
+            doc.text(`Fecha: ${formatDate(presupuesto.fecha)}`, 150, y + 12, { align: "right" });
+
+            y += 25;
+
             doc.line(20, y, 190, y);
-            
-            // Datos del cliente
             y += 10;
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('CLIENTE:', 20, y);
-            
-            doc.setFont(undefined, 'normal');
-            doc.setFontSize(10);
-            y += 7;
+
+            // =========================
+            // DATOS CLIENTE
+            // =========================
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Datos del Cliente", 20, y);
+            y += 8;
+
+            doc.setFont("helvetica", "normal");
             doc.text(`Nombre: ${presupuesto.cliente.nombre}`, 20, y);
+            y += 6;
+
             if (presupuesto.cliente.direccion) {
-                y += 6;
                 doc.text(`Dirección: ${presupuesto.cliente.direccion}`, 20, y);
-            }
-            if (presupuesto.cliente.telefono) {
                 y += 6;
-                doc.text(`Teléfono: ${presupuesto.cliente.telefono}`, 20, y);
             }
-            
-            // Línea separadora
-            y += 7;
+
+            if (presupuesto.cliente.telefono) {
+                doc.text(`Teléfono: ${presupuesto.cliente.telefono}`, 20, y);
+                y += 6;
+            }
+
+            y += 8;
             doc.line(20, y, 190, y);
-            
-            // Encabezados de tabla
             y += 10;
-            doc.setFont(undefined, 'bold');
-            doc.text('Descripción', 20, y);
-            doc.text('Cant.', 120, y);
-            doc.text('P. Unit.', 145, y);
-            doc.text('Subtotal', 175, y);
-            
-            y += 2;
+
+            // =========================
+            // TABLA
+            // =========================
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Descripción", 20, y);
+            doc.text("Cant.", 110, y, { align: "right" });
+            doc.text("P. Unit", 140, y, { align: "right" });
+            doc.text("Subtotal", 190, y, { align: "right" });
+
+            y += 6;
             doc.line(20, y, 190, y);
-            
-            // Items
-            doc.setFont(undefined, 'normal');
-            doc.setFontSize(9);
-            y += 7;
-            
+            y += 8;
+
+            doc.setFont("helvetica", "normal");
+
             presupuesto.items.forEach(item => {
+
                 if (y > 270) {
                     doc.addPage();
                     y = 20;
                 }
-                
-                const descripcion = item.descripcion.length > 45 
-                    ? item.descripcion.substring(0, 42) + '...' 
-                    : item.descripcion;
-                
-                doc.text(descripcion, 20, y);
-                doc.text(`${item.cantidad} ${item.unidad}`, 120, y);
-                doc.text(`$${formatNumber(item.precioUnitario)}`, 145, y);
-                doc.text(`$${formatNumber(item.subtotal)}`, 175, y);
-                
-                y += 6;
+
+                doc.text(item.descripcion, 20, y);
+                doc.text(item.cantidad.toString(), 110, y, { align: "right" });
+                doc.text(`$${formatNumber(item.precioUnitario)}`, 140, y, { align: "right" });
+                doc.text(`$${formatNumber(item.subtotal)}`, 190, y, { align: "right" });
+
+                y += 8;
             });
-            
-            // Totales
+
             y += 5;
             doc.line(20, y, 190, y);
-            y += 7;
+            y += 5;
+
+            // =========================
+            // TOTALES
+            // =========================
+
+            y += 5;
+            doc.line(20, y, 190, y);
+            y += 5;
             
             doc.setFontSize(10);
             doc.text('SUBTOTAL:', 145, y);
@@ -798,35 +967,118 @@
                 doc.setTextColor(211, 47, 47);
                 doc.text(`Descuento (${presupuesto.descuentoPorcentaje}%):`, 145, y);
                 doc.text(`- $${formatNumber(presupuesto.montoDescuento)}`, 175, y);
-                doc.setTextColor(0);
+                doc.setTextColor(255,0,0);
                 
                 y += 3;
                 doc.line(145, y, 190, y);
             }
-            
+
+            doc.setTextColor(0,0,0);
             y += 7;
             doc.setFont(undefined, 'bold');
             doc.setFontSize(12);
             doc.text('TOTAL:', 145, y);
             doc.text(`$${formatNumber(presupuesto.total)}`, 175, y);
             
-            // Observaciones
+            y += 5;
+
+            // =========================
+            // OBSERVACIONES
+            // =========================
+
             if (presupuesto.observaciones) {
-                y += 15;
                 doc.setFontSize(11);
-                doc.text('OBSERVACIONES:', 20, y);
-                
-                doc.setFont(undefined, 'normal');
-                doc.setFontSize(9);
-                y += 7;
-                const obs = doc.splitTextToSize(presupuesto.observaciones, 170);
-                doc.text(obs, 20, y);
+                doc.setFont("helvetica", "bold");
+                doc.text("Observaciones:", 20, y);
+                y += 6;
+
+                doc.setFont("helvetica", "normal");
+                doc.text(
+                    doc.splitTextToSize(presupuesto.observaciones, 170),
+                    20,
+                    y
+                );
+
+                y += 5;
             }
+
+            // VALIDEZ DEL PRESUPUESTO
             
-            // Guardar PDF
+            y += 4;
+
+            if (y > 260) {
+                    doc.addPage();
+                    y = 20;
+            }
+
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.text('VALIDEZ DEL PRESUPUESTO:', 20, y);
+
+            doc.setFont(undefined, 'normal');	
+            doc.setFontSize(10);
+            y += 3;
+
+            doc.text('Este presupuesto tiene una validez de 15 días.', 20, y);
+
+            // LEYENDA LEGAL DISCRETA
+            
+            y += 4;
+
+            doc.setTextColor(60); // Gris discreto
+            doc.setFontSize(8);
+
+            const leyenda = doc.splitTextToSize(
+                'No incluye cables pegados a la cañería o cualquier otro vicio oculto en la instalación, lo cual se cotizará en el momento.',
+                170
+            );
+
+            doc.text(leyenda, 20, y);
+
+            // Volver color a negro para evitar afectar otras partes
+            doc.setTextColor(0);
+            
+            // PIE DE PAGINA AUTOMATICO
+
+            const totalPages = doc.internal.getNumberOfPages();
+
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+
+                doc.setFontSize(8);
+                doc.setTextColor(60);
+
+            // Línea superior del pie
+            doc.setDrawColor(200);
+            doc.line(20, 285, 190, 285);
+
+            // Texto centrado
+                    doc.text(
+                    'WhatsApp: 263-4548407',
+                    105,
+                    290,
+                { align: 'center' }
+            );
+
+            // Numeración de página
+            doc.text(
+                `Página ${i} de ${totalPages}`,
+                190,
+                290,
+                { align: 'right' }
+                    );
+            }
+
+
+
+            // =========================
+            // GUARDAR
+            // =========================
+
             doc.save(`Presupuesto_${presupuesto.numero}.pdf`);
         }
-
+	
         function agregarPrecio() {
             const categoria = document.getElementById('nuevaCategoria').value.trim();
             const descripcion = document.getElementById('nuevaDescripcion').value.trim();
@@ -859,35 +1111,116 @@
         }
 
         function mostrarPrecios() {
+
             const lista = document.getElementById('preciosList');
+
             if (DB.precios.length === 0) {
-                lista.innerHTML = '<p style="text-align: center; color: #999;">No hay precios cargados</p>';
+                lista.innerHTML = "<p>No hay precios cargados</p>";
                 return;
             }
-            
-            const porCategoria = {};
+
+            // Agrupar por categoría
+            const categorias = {};
+
             DB.precios.forEach((p, index) => {
-                if (!porCategoria[p.categoria]) {
-                    porCategoria[p.categoria] = [];
+
+                if (!categorias[p.categoria]) {
+                    categorias[p.categoria] = [];
                 }
-                porCategoria[p.categoria].push({...p, index});
+
+                categorias[p.categoria].push({
+                    ...p,
+                    index: index
+                });
+
             });
-            
-            lista.innerHTML = Object.keys(porCategoria).sort().map(cat => `
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #1976D2; margin-bottom: 8px;">${cat}</h4>
-                    ${porCategoria[cat].map(p => `
-                        <div class="item">
-                            <div class="item-info">
-                                <div class="item-description">${p.descripcion}</div>
-                                <div class="item-detail">$${formatNumber(p.precio)} / ${p.unidad}</div>
+
+            // Generar HTML
+            let html = "";
+
+            Object.keys(categorias).sort().forEach(categoria => {
+
+                html += `
+                    <div style="
+                        background:#1976D2;
+                        color:white;
+                        padding:8px;
+                        margin-top:16px;
+                        border-radius:6px;
+                        font-weight:bold;
+                    ">
+                        ${categoria}
+                    </div>
+                `;
+
+                categorias[categoria].forEach(item => {
+
+                    html += `
+                        <div style="
+                            background:#fff;
+                            padding:10px;
+                            margin:4px 0;
+                            border-radius:6px;
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                        ">
+
+                            <div>
+                                <div style="font-weight:500;">
+                                    ${item.descripcion}
+                                </div>
+
+                                <div style="font-size:12px;color:#666;">
+                                    ${item.unidad}
+                                </div>
                             </div>
-                            <button class="btn btn-danger" onclick="eliminarPrecio(${p.index})">✕</button>
+
+                            <div style="display:flex;align-items:center;gap:6px;">
+
+                                <input type="number"
+                                    value="${item.precio}"
+                                    step="0.01"
+                                    style="width:100px;padding:4px;"
+                                    onchange="modificarPrecio(${item.index}, this.value)">
+
+                                <button onclick="eliminarPrecio(${item.index})"
+                                        style="
+                                        background:#d32f2f;
+                                        color:white;
+                                        border:none;
+                                        padding:4px 8px;
+                                        border-radius:4px;
+                                        cursor:pointer;">
+                                    X
+                                </button>
+
+                            </div>
+
                         </div>
-                    `).join('')}
-                </div>
-            `).join('');
+                    `;
+
+                });
+
+            });
+
+            lista.innerHTML = html;
         }
+
+        function modificarPrecio(index, nuevoPrecio) {
+
+            nuevoPrecio = parseFloat(nuevoPrecio);
+
+            if (isNaN(nuevoPrecio)) return;
+
+            DB.precios[index].precio = nuevoPrecio;
+
+            DB.savePrecios();
+
+            actualizarCategorias();
+            mostrarPrecios();
+        }
+
 
         function eliminarPrecio(index) {
             if (confirm('¿Eliminar este precio?')) {
