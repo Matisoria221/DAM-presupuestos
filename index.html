@@ -359,9 +359,19 @@
                         <option value="">Seleccione un ítem</option>
                     </select>
                 </div>
+                <div id="conceptoManual" class="hidden">
+                <div class="input-group">
+                    <label>Descripción</label>
+                    <input type="text" id="descripcionManual" placeholder="Ej: Trabajo de albañilería adicional">
+                </div>
+                <div class="input-group">
+                    <label>Precio Unitario ($)</label>
+                    <input type="number" id="precioManual" step="1" placeholder="0.00">
+                </div>
+                </div>
                 <div class="input-group">
                     <label>Cantidad</label>
-                    <input type="number" id="cantidad" value="1" min="0.01" step="0.01">
+                    <input type="number" id="cantidad" value="1" min="1" step="1">
                 </div>
                 <button class="btn btn-primary" onclick="agregarItem()">Agregar Ítem</button>
             </div>
@@ -390,14 +400,12 @@
                     </div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-title">Observaciones</div>
                 <div class="input-group">
                     <textarea id="observaciones" placeholder="Observaciones adicionales..."></textarea>
                 </div>
             </div>
-
             <button class="btn btn-success" onclick="guardarPresupuesto()">Guardar Presupuesto</button>
         </div>
 
@@ -484,6 +492,7 @@
         // Variables globales
         let itemsPresupuesto = [];
         let preciosPorCategoria = {};
+        let editandoId = null;
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
@@ -656,6 +665,13 @@
             
             const select = document.getElementById('categoria');
             select.innerHTML = '<option value="">Seleccione una categoría</option>';
+
+            // Agregamos primero Conceptos Varios
+            const opcionVarios = document.createElement('option');
+            opcionVarios.value = 'Conceptos Varios';
+            opcionVarios.textContent = 'Conceptos Varios';
+            select.appendChild(opcionVarios);
+
             Object.keys(preciosPorCategoria).sort().forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat;
@@ -664,11 +680,22 @@
             });
         }
 
-        function cargarItems() {
+       function cargarItems() {
             const categoria = document.getElementById('categoria').value;
             const selectItem = document.getElementById('item');
+            const conceptoManual = document.getElementById('conceptoManual');
+
             selectItem.innerHTML = '<option value="">Seleccione un ítem</option>';
-            
+
+            if (categoria === 'Conceptos Varios') {
+                conceptoManual.classList.remove('hidden');
+                selectItem.disabled = true;
+                return;
+            } else {
+                conceptoManual.classList.add('hidden');
+                selectItem.disabled = false;
+            }
+
             if (categoria && preciosPorCategoria[categoria]) {
                 preciosPorCategoria[categoria].forEach((item, index) => {
                     const option = document.createElement('option');
@@ -679,36 +706,67 @@
             }
         }
 
-        function agregarItem() {
+       function agregarItem() {
             const categoria = document.getElementById('categoria').value;
-            const itemIndex = document.getElementById('item').value;
             const cantidad = parseFloat(document.getElementById('cantidad').value);
-            
-            if (!categoria || itemIndex === '' || !cantidad) {
-                alert('Por favor complete todos los campos');
+
+            if (!categoria || !cantidad) {
+                alert('Por favor complete los campos');
                 return;
             }
-            
-            const item = preciosPorCategoria[categoria][itemIndex];
-            const subtotal = item.precio * cantidad;
-            
-            itemsPresupuesto.push({
-                categoria: categoria, 
-                descripcion: item.descripcion,
-                cantidad: cantidad,
-                precioUnitario: item.precio,
-                unidad: item.unidad,
-                subtotal: subtotal
-            });
-            
+
+            // 🔹 Caso Conceptos Varios
+            if (categoria === 'Conceptos Varios') {
+                const descripcion = document.getElementById('descripcionManual').value.trim();
+                const precio = parseFloat(document.getElementById('precioManual').value);
+
+                if (!descripcion || isNaN(precio)) {
+                    alert('Ingrese descripción y precio');
+                    return;
+                }
+
+                const subtotal = precio * cantidad;
+
+                itemsPresupuesto.push({
+                    categoria: categoria,
+                    descripcion: descripcion,
+                    cantidad: cantidad,
+                    precioUnitario: precio,
+                    unidad: 'ud',
+                    subtotal: subtotal
+                });
+
+                document.getElementById('descripcionManual').value = '';
+                document.getElementById('precioManual').value = '';
+
+            } else {
+                const itemIndex = document.getElementById('item').value;
+
+                if (itemIndex === '') {
+                    alert('Seleccione un ítem');
+                    return;
+                }
+
+                const item = preciosPorCategoria[categoria][itemIndex];
+                const subtotal = item.precio * cantidad;
+
+                itemsPresupuesto.push({
+                    categoria: categoria,
+                    descripcion: item.descripcion,
+                    cantidad: cantidad,
+                    precioUnitario: item.precio,
+                    unidad: item.unidad,
+                    subtotal: subtotal
+                });
+            }
+
             mostrarItems();
             calcularTotales();
-            
-            // Resetear
+
             document.getElementById('cantidad').value = 1;
             document.getElementById('item').value = '';
         }
-
+        
         function eliminarItem(index) {
             if (confirm('¿Eliminar este ítem?')) {
                 itemsPresupuesto.splice(index, 1);
@@ -748,64 +806,123 @@
         }
 
         function guardarPresupuesto() {
+
             const clienteNombre = document.getElementById('clienteNombre').value.trim();
             const clienteDireccion = document.getElementById('clienteDireccion').value.trim();
             const clienteTelefono = document.getElementById('clienteTelefono').value.trim();
             const observaciones = document.getElementById('observaciones').value.trim();
-            
+
             if (!clienteNombre) {
                 alert('Por favor ingrese el nombre del cliente');
                 return;
             }
-            
+
             if (itemsPresupuesto.length === 0) {
                 alert('Por favor agregue al menos un ítem');
                 return;
             }
-            
-            const año = new Date().getFullYear();
-            const numero = DB.presupuestos.filter(p => p.numero.startsWith(año + '-')).length + 1;
-            const numeroPresupuesto = `${año}-${String(numero).padStart(4, '0')}`;
-            
+
             const subtotal = itemsPresupuesto.reduce((sum, item) => sum + item.subtotal, 0);
             const descuentoPorcentaje = parseFloat(document.getElementById('descuento').value) || 0;
             const montoDescuento = subtotal * (descuentoPorcentaje / 100);
             const total = subtotal - montoDescuento;
-            
-            const presupuesto = {
-                id: Date.now(),
-                numero: numeroPresupuesto,
-                fecha: new Date().toISOString(),
-                cliente: {
-                    nombre: clienteNombre,
-                    direccion: clienteDireccion,
-                    telefono: clienteTelefono
-                },
-                items: itemsPresupuesto,
-                subtotal: subtotal,
-                descuentoPorcentaje: descuentoPorcentaje,
-                montoDescuento: montoDescuento,
-                total: total,
-                observaciones: observaciones
-            };
-            
-            DB.presupuestos.push(presupuesto);
+
+            // 🔵 MODO EDICIÓN
+            if (editandoId) {
+
+                const index = DB.presupuestos.findIndex(p => p.id === editandoId);
+
+                DB.presupuestos[index] = {
+                    ...DB.presupuestos[index],
+                    cliente: {
+                        nombre: clienteNombre,
+                        direccion: clienteDireccion,
+                        telefono: clienteTelefono
+                    },
+                    items: itemsPresupuesto,
+                    subtotal,
+                    descuentoPorcentaje,
+                    montoDescuento,
+                    total,
+                    observaciones
+                };
+
+                alert("Presupuesto actualizado correctamente");
+
+                editandoId = null;
+
+            } else {
+
+                const año = new Date().getFullYear();
+                const numero = DB.presupuestos.filter(p => p.numero.startsWith(año + '-')).length + 1;
+                const numeroPresupuesto = `${año}-${String(numero).padStart(4, '0')}`;
+
+                DB.presupuestos.push({
+                    id: Date.now(),
+                    numero: numeroPresupuesto,
+                    fecha: new Date().toISOString(),
+                    cliente: {
+                        nombre: clienteNombre,
+                        direccion: clienteDireccion,
+                        telefono: clienteTelefono
+                    },
+                    items: itemsPresupuesto,
+                    subtotal,
+                    descuentoPorcentaje,
+                    montoDescuento,
+                    total,
+                    observaciones
+                });
+
+                alert("Presupuesto guardado correctamente");
+            }
+
             DB.savePresupuestos();
-            
-            alert(`Presupuesto ${numeroPresupuesto} guardado correctamente`);
-            
-            // Limpiar formulario
+
+            // Reset formulario
             document.getElementById('clienteNombre').value = '';
             document.getElementById('clienteDireccion').value = '';
             document.getElementById('clienteTelefono').value = '';
             document.getElementById('observaciones').value = '';
             document.getElementById('descuento').value = 0;
+
             itemsPresupuesto = [];
             mostrarItems();
             calcularTotales();
-            
-            // Cambiar a tab guardados
+
+            document.querySelector('.btn-success').textContent = "Guardar Presupuesto";
+
+            mostrarPresupuestos();
             switchTab('guardados');
+        }
+
+        function editarPresupuesto(id) {
+
+            const presupuesto = DB.presupuestos.find(p => p.id === id);
+            if (!presupuesto) return;
+
+            // Activar modo edición
+            editandoId = id;
+
+            // Cargar datos cliente
+            document.getElementById('clienteNombre').value = presupuesto.cliente.nombre;
+            document.getElementById('clienteDireccion').value = presupuesto.cliente.direccion;
+            document.getElementById('clienteTelefono').value = presupuesto.cliente.telefono;
+            document.getElementById('observaciones').value = presupuesto.observaciones;
+            document.getElementById('descuento').value = presupuesto.descuentoPorcentaje;
+
+            // Cargar items
+            itemsPresupuesto = JSON.parse(JSON.stringify(presupuesto.items));
+
+            mostrarItems();
+            calcularTotales();
+
+            // Cambiar botón
+            const btn = document.querySelector('.btn-success');
+            btn.textContent = "Actualizar Presupuesto";
+
+            // Ir a pestaña nuevo
+            switchTab('nuevo');
         }
 
         function mostrarPresupuestos() {
@@ -825,10 +942,10 @@
                     <div class="presupuesto-info"><strong>Fecha:</strong> ${formatDate(p.fecha)}</div>
                     ${p.cliente.direccion ? `<div class="presupuesto-info"><strong>Dirección:</strong> ${p.cliente.direccion}</div>` : ''}
                     <div class="presupuesto-actions">
+                        <button class="btn btn-secondary" onclick="editarPresupuesto(${p.id})">✏ Editar</button>
                         <button class="btn btn-primary" onclick="generarPDF(${p.id})">Generar PDF</button>
                         <button class="btn btn-danger" onclick="eliminarPresupuesto(${p.id})">Eliminar</button>
                     </div>
-                </div>
             `).join('');
         }
 
@@ -1240,7 +1357,6 @@
             actualizarCategorias();
             mostrarPrecios();
         }
-
 
         function eliminarPrecio(index) {
             if (confirm('¿Eliminar este precio?')) {
